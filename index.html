@@ -22,542 +22,399 @@
     --accent-purple: #8250df;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
-.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; }
+.container { max-width: 1600px; margin: 0 auto; padding: 20px; }
 
 /* Header */
-.header { padding: 24px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
-.header h1 { font-size: 1.6rem; display: flex; align-items: center; gap: 12px; }
+.header { padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
 .header h1 i { color: var(--accent-blue); }
-.header p { color: var(--text-secondary); margin-top: 8px; font-size: 0.9rem; }
+.header p { color: var(--text-secondary); margin-top: 6px; font-size: 0.9rem; }
 
 /* Layout */
-.main-layout { display: grid; grid-template-columns: 300px 1fr 320px; gap: 20px; }
+.main-layout { display: grid; grid-template-columns: 200px 1fr 360px; gap: 16px; }
 
 /* Sidebar */
 .sidebar { position: sticky; top: 20px; height: fit-content; }
-.resource-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; cursor: pointer; transition: all 0.2s; }
-.resource-card:hover { border-color: var(--accent-blue); background: rgba(88,166,255,0.05); }
-.resource-card.active { border-color: var(--accent-blue); background: rgba(88,166,255,0.1); box-shadow: 0 0 0 1px var(--accent-blue); }
-.resource-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 12px; }
-.resource-name { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
-.resource-desc { font-size: 0.8rem; color: var(--text-secondary); }
-
-/* Content */
-.content { min-height: 600px; }
-.section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-.section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-.section-title i { color: var(--accent-blue); }
-
-/* Form Elements */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.form-group { margin-bottom: 16px; }
-.form-label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; }
-.form-input, .form-select, .form-textarea {
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 0.9rem;
-    transition: border-color 0.2s;
-}
-.form-input:focus, .form-select:focus, .form-textarea:focus {
-    outline: none;
-    border-color: var(--accent-blue);
-}
-.form-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b949e' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
-.form-textarea { min-height: 100px; resize: vertical; }
-
-/* Tags */
-.tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
-.tag-blue { background: rgba(88,166,255,0.15); color: var(--accent-blue); }
-.tag-green { background: rgba(63,185,80,0.15); color: var(--accent-green); }
-.tag-orange { background: rgba(210,153,34,0.15); color: var(--accent-orange); }
-.tag-red { background: rgba(248,81,73,0.15); color: var(--accent-red); }
-.tag-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
-
-/* Tags Container */
-.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.tag-item { display: flex; align-items: center; gap: 6px; }
-.tag-remove { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
-.tag-remove:hover { opacity: 1; }
-
-/* Add Tag */
-.add-tag { display: flex; gap: 8px; margin-top: 8px; }
-.add-tag input { flex: 1; }
-
-/* Policy Card */
-.policy-card { background: var(--bg); border: 1px solid var(--border-soft); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
-.policy-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.policy-name { font-weight: 600; font-size: 0.95rem; }
-.policy-status { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; }
-.status-active { background: var(--accent-green); }
-.status-inactive { background: var(--text-muted); }
-
-/* Condition */
-.condition { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary); border-radius: 6px; margin-bottom: 8px; }
-.condition-key { font-weight: 500; color: var(--accent-blue); min-width: 80px; }
-.condition-op { color: var(--accent-orange); font-weight: 500; }
-.condition-value { color: var(--accent-green); }
-
-/* Buttons */
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; }
-.btn-primary { background: var(--accent-blue); color: #fff; }
-.btn-primary:hover { background: #4090e0; }
-.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted); }
-.btn-danger { background: rgba(248,81,73,0.15); color: var(--accent-red); }
-.btn-danger:hover { background: rgba(248,81,73,0.25); }
-.btn-group { display: flex; gap: 8px; }
-
-/* Preview */
-.preview-panel { position: sticky; top: 20px; height: fit-content; }
-.preview-code { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); overflow-x: auto; }
-.preview-code pre { white-space: pre-wrap; }
-
-/* Switch */
-.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--border); transition: 0.3s; border-radius: 24px; }
-.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition: 0.3s; border-radius: 50%; }
-input:checked + .slider { background: var(--accent-blue); }
-input:checked + .slider:before { transform: translateX(20px); }
-
-/* Tabs */
-.tabs { display: flex; gap: 4px; padding: 4px; background: var(--bg); border-radius: 8px; margin-bottom: 16px; }
-.tab { padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: var(--text-secondary); transition: all 0.2s; }
-.tab:hover { color: var(--text); background: var(--bg-secondary); }
-.tab.active { background: var(--accent-blue); color: #fff; }
-
-/* Modal */
-.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; }
-.modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-title { font-size: 1.2rem; font-weight: 600; }
-.modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.2rem; }
-.modal-close:hover { color: var(--text); }
+.sidebar-title { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; padding: 0 8px; }
+.resource-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; color: var(--text-secondary); font-size: 0.9rem; }
+.resource-item:hover { background: rgba(0,0,0,0.04); color: var(--text); }
+.resource-item.active { background: rgba(9,105,218,0.1); color: var(--accent-blue); font-weight: 500; }
+.resource-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+.resource-count { margin-left: auto; background: var(--border); color: var(--text-secondary); padding: 1px 8px; border-radius: 10px; font-size: 0.75rem; }
 
 /* Table */
+.table-wrapper { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.table-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.table-title { font-weight: 600; font-size: 1rem; }
 .table { width: 100%; border-collapse: collapse; }
-.table th { padding: 10px 12px; text-align: left; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
-.table td { padding: 10px 12px; border-bottom: 1px solid var(--border-soft); font-size: 0.85rem; }
+.table th { padding: 10px 14px; text-align: left; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid var(--border); background: var(--bg); font-weight: 500; white-space: nowrap; }
+.table td { padding: 12px 14px; border-bottom: 1px solid var(--border-soft); font-size: 0.85rem; vertical-align: top; }
+.table tr:hover { background: rgba(9,105,218,0.02); }
+.table tr.selected { background: rgba(9,105,218,0.06); }
+.table tr { cursor: pointer; }
+
+/* Tags */
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; }
+.tag-allow { background: rgba(26,127,55,0.1); color: var(--accent-green); }
+.tag-deny { background: rgba(208,34,46,0.1); color: var(--accent-red); }
+.tag-approval { background: rgba(191,135,0,0.1); color: var(--accent-orange); }
+.tag-wf { background: rgba(9,105,218,0.1); color: var(--accent-blue); }
+.tag-skill { background: rgba(130,80,223,0.1); color: var(--accent-purple); }
+.tag-ds { background: rgba(191,135,0,0.1); color: var(--accent-orange); }
+.tag-tol { background: rgba(101,109,118,0.1); color: var(--text-secondary); }
+.tag-kb { background: rgba(26,127,55,0.1); color: var(--accent-green); }
+
+/* Condition text */
+.condition-text { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
+.condition-text code { background: rgba(9,105,218,0.08); padding: 1px 5px; border-radius: 3px; color: var(--accent-blue); font-size: 0.75rem; }
+
+/* Detail Panel */
+.detail-panel { position: sticky; top: 20px; height: fit-content; }
+.detail-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+.detail-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
+.detail-id { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; font-family: monospace; }
+.detail-section { margin-bottom: 16px; }
+.detail-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+.detail-value { font-size: 0.9rem; line-height: 1.6; }
+.detail-code { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); overflow-x: auto; }
+.detail-obligation { background: rgba(191,135,0,0.05); border: 1px solid rgba(191,135,0,0.2); border-radius: 6px; padding: 10px 12px; font-size: 0.85rem; color: var(--accent-orange); }
+
+/* Stats */
+.stats { display: flex; gap: 12px; margin-bottom: 16px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; flex: 1; }
+.stat-value { font-size: 1.4rem; font-weight: 600; }
+.stat-label { font-size: 0.8rem; color: var(--text-muted); }
 
 /* Responsive */
-@media (max-width: 1200px) { .main-layout { grid-template-columns: 1fr; } .sidebar, .preview-panel { position: static; } }
+@media (max-width: 1200px) { .main-layout { grid-template-columns: 1fr; } .sidebar { position: static; display: flex; flex-wrap: wrap; gap: 4px; } }
 </style>
 </head>
 <body>
 <div class="container">
 <div class="header">
-<h1><i class="ri ri-shield-check-line"></i> AgentForge · ABAC 权限配置</h1>
+<h1><i class="ri ri-shield-check-line"></i> AgentForge · ABAC 权限策略配置</h1>
 <p>基于属性的访问控制（Attribute-Based Access Control）策略管理</p>
 </div>
 
+<!-- Stats -->
+<div class="stats">
+<div class="stat-card">
+<div class="stat-value" style="color: var(--accent-blue);">24</div>
+<div class="stat-label">总策略数</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" style="color: var(--accent-green);">13</div>
+<div class="stat-label">Allow</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" style="color: var(--accent-red);">7</div>
+<div class="stat-label">Deny</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" style="color: var(--accent-orange);">4</div>
+<div class="stat-label">需审批</div>
+</div>
+<div class="stat-card">
+<div class="stat-value">6</div>
+<div class="stat-label">资源类型</div>
+</div>
+</div>
+
 <div class="main-layout">
-<!-- Left Sidebar - Resource Types -->
+<!-- Sidebar -->
 <div class="sidebar">
-<div class="section-title" style="margin-bottom: 12px;"><i class="ri ri-folder-line"></i> 资源类型</div>
-
-<div class="resource-card" onclick="selectResource('global')" style="border-left: 3px solid var(--accent-red); margin-bottom: 20px;">
-<div class="resource-icon" style="background: rgba(208,215,222,0.4); color: var(--text-secondary);">
-<i class="ri ri-global-line"></i>
+<div class="sidebar-title">资源类型</div>
+<div class="resource-item active" onclick="filterByType('all')">
+<i class="ri ri-list-check"></i> 全部
+<span class="resource-count">24</span>
 </div>
-<div class="resource-name">全局</div>
-<div class="resource-desc">跨资源类型的通用权限</div>
+<div class="resource-item" onclick="filterByType('workflow')">
+<i class="ri ri-flow-chart"></i> 工作流
+<span class="resource-count">9</span>
 </div>
-
-<div class="resource-card active" onclick="selectResource('workflow')">
-<div class="resource-icon" style="background: rgba(88,166,255,0.15); color: var(--accent-blue);">
-<i class="ri ri-flow-chart"></i>
+<div class="resource-item" onclick="filterByType('skill')">
+<i class="ri ri-tools-line"></i> Skill
+<span class="resource-count">3</span>
 </div>
-<div class="resource-name">工作流</div>
-<div class="resource-desc">Agent 执行流程编排</div>
+<div class="resource-item" onclick="filterByType('dataset')">
+<i class="ri ri-database-2-line"></i> 数据集
+<span class="resource-count">6</span>
 </div>
-
-<div class="resource-card" onclick="selectResource('agent')">
-<div class="resource-icon" style="background: rgba(63,185,80,0.15); color: var(--accent-green);">
-<i class="ri ri-robot-line"></i>
+<div class="resource-item" onclick="filterByType('tool')">
+<i class="ri ri-hammer-line"></i> 工具/API
+<span class="resource-count">4</span>
 </div>
-<div class="resource-name">智能体</div>
-<div class="resource-desc">AI Agent 配置管理</div>
-</div>
-
-<div class="resource-card" onclick="selectResource('evalset')">
-<div class="resource-icon" style="background: rgba(210,153,34,0.15); color: var(--accent-orange);">
-<i class="ri ri-bar-chart-box-line"></i>
-</div>
-<div class="resource-name">评测集</div>
-<div class="resource-desc">Benchmark 数据集</div>
-</div>
-
-<div class="resource-card" onclick="selectResource('skill')">
-<div class="resource-icon" style="background: rgba(139,92,246,0.15); color: var(--accent-purple);">
-<i class="ri ri-tools-line"></i>
-</div>
-<div class="resource-name">Skill</div>
-<div class="resource-desc">可复用能力组件</div>
+<div class="resource-item" onclick="filterByType('kb')">
+<i class="ri ri-book-open-line"></i> 知识库
+<span class="resource-count">3</span>
 </div>
 </div>
 
-<!-- Center Content -->
-<div class="content">
-<!-- Subject Attributes -->
-<div class="section">
-<div class="section-title"><i class="ri ri-user-line"></i> 主体属性（Subject）</div>
-<div class="form-grid">
-<div class="form-group">
-<label class="form-label">租户</label>
-<select class="form-select" id="subject-tenant" onchange="updatePreview()">
-<option value="tenant-001" selected>tenant-001</option>
-<option value="tenant-002">tenant-002</option>
-<option value="tenant-003">tenant-003</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">机构</label>
-<select class="form-select" id="subject-org" onchange="updatePreview()">
-<option value="org-a" selected>机构A</option>
-<option value="org-b">机构B</option>
-<option value="org-c">机构C</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">部门</label>
-<select class="form-select" id="subject-dept" onchange="updatePreview()">
-<option value="engineering" selected>工程部</option>
-<option value="product">产品部</option>
-<option value="operations">运维部</option>
-<option value="security">安全部</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">审计级别</label>
-<select class="form-select" id="subject-audit" onchange="updatePreview()">
-<option value="basic" selected>基础</option>
-<option value="detailed">详细</option>
-<option value="full">完整</option>
+<!-- Table -->
+<div class="table-wrapper">
+<div class="table-header">
+<div class="table-title">策略列表</div>
+<div style="display: flex; gap: 8px;">
+<select style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; background: var(--bg);" onchange="filterByDecision(this.value)">
+<option value="all">全部决策</option>
+<option value="allow">Allow</option>
+<option value="deny">Deny</option>
+<option value="approval">需审批</option>
 </select>
 </div>
 </div>
-</div>
-
-<!-- Resource Attributes -->
-<div class="section">
-<div class="section-title"><i class="ri ri-folder-line"></i> 资源属性（Resource）</div>
-<div class="form-grid">
-<div class="form-group">
-<label class="form-label">资源类型</label>
-<input type="text" class="form-input" id="resource-type" value="工作流" readonly>
-</div>
-<div class="form-group">
-<label class="form-label">资源状态</label>
-<select class="form-select" id="resource-status" onchange="updatePreview()">
-<option value="draft">草稿</option>
-<option value="published" selected>已发布</option>
-<option value="archived">已归档</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">安全等级</label>
-<select class="form-select" id="resource-security" onchange="updatePreview()">
-<option value="public">公开</option>
-<option value="internal" selected>内部</option>
-<option value="confidential">机密</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">所属租户</label>
-<input type="text" class="form-input" id="resource-tenant" value="tenant-001" onchange="updatePreview()">
-</div>
+<table class="table">
+<thead>
+<tr>
+<th style="width: 100px;">策略ID</th>
+<th style="width: 80px;">资源类型</th>
+<th>策略名称</th>
+<th style="width: 70px;">动作</th>
+<th>条件</th>
+<th style="width: 70px;">决策</th>
+<th>附加义务</th>
+</tr>
+</thead>
+<tbody id="policy-table">
+</tbody>
+</table>
 </div>
 </div>
 
-<!-- Operations -->
-<div class="section">
-<div class="section-title"><i class="ri ri-settings-3-line"></i> 操作权限（Operations）</div>
-<div class="tabs">
-<div class="tab active" onclick="switchTab(this, 'basic-ops')">基础操作</div>
-<div class="tab" onclick="switchTab(this, 'advanced-ops')">高级操作</div>
-<div class="tab" onclick="switchTab(this, 'admin-ops')">管理操作</div>
-</div>
-
-<div id="basic-ops" class="operation-group">
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" checked onchange="updatePreview()"> <span>查看</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" checked onchange="updatePreview()"> <span>读取</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" checked onchange="updatePreview()"> <span>创建</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>编辑</span>
-</label>
+<!-- Detail Panel -->
+<div class="detail-panel">
+<div class="detail-card" id="detail-card">
+<div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+<i class="ri ri-shield-check-line" style="font-size: 2rem; margin-bottom: 8px;"></i>
+<div>点击策略查看详情</div>
 </div>
 </div>
-
-<div id="advanced-ops" class="operation-group" style="display: none;">
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>执行</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>调试</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>发布</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>回滚</span>
-</label>
-</div>
-</div>
-
-<div id="admin-ops" class="operation-group" style="display: none;">
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>删除</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>权限管理</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>审计日志</span>
-</label>
-<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-<input type="checkbox" onchange="updatePreview()"> <span>系统配置</span>
-</label>
-</div>
-</div>
-</div>
-
-
-
-<!-- Existing Policies -->
-<div class="section">
-<div class="section-title" style="display: flex; justify-content: space-between;">
-<span><i class="ri ri-list-check"></i> 已配置策略</span>
-<button class="btn btn-primary" onclick="showModal()"><i class="ri ri-add-line"></i> 新建策略</button>
-</div>
-
-<div id="policies-list">
-<div class="policy-card">
-<div class="policy-header">
-<div class="policy-name">开发者工作流读写权限</div>
-<div class="policy-status">
-<span class="status-dot status-active"></span>
-<span>启用</span>
-</div>
-</div>
-<div class="condition">
-<span class="condition-key">角色</span>
-<span class="condition-op">=</span>
-<span class="condition-value">developer</span>
-</div>
-<div class="condition">
-<span class="condition-key">资源类型</span>
-<span class="condition-op">=</span>
-<span class="condition-value">workflow</span>
-</div>
-<div class="condition">
-<span class="condition-key">操作</span>
-<span class="condition-op">in</span>
-<span class="condition-value">[read, create, edit]</span>
-</div>
-<div style="display: flex; gap: 8px; margin-top: 12px;">
-<span class="tag tag-green">ALLOW</span>
-<span class="tag tag-blue">工作流</span>
-</div>
-</div>
-
-
-</div>
-</div>
-</div>
-
-<!-- Right Preview Panel -->
-<div class="preview-panel">
-<div class="section">
-<div class="section-title"><i class="ri ri-code-line"></i> 策略预览</div>
-<div class="preview-code">
-<pre id="policy-preview">{
-  "policy": {
-    "name": "开发者工作流读写权限",
-    "effect": "ALLOW",
-    "resource": {
-      "type": "workflow",
-      "tenant_id": "tenant-001"
-    },
-    "subject": {
-      "role": "developer",
-      "department": "engineering",
-      "security_level": "internal"
-    },
-    "operations": [
-      "read",
-      "create"
-    ],
-    "conditions": {
-      "time": "business-hours",
-      "source": "internal-network",
-      "device": "desktop",
-      "auth": "sso"
-    }
-  }
-}</pre>
-</div>
-<div style="margin-top: 12px;">
-<button class="btn btn-primary" style="width: 100%;" onclick="savePolicy()">
-<i class="ri ri-save-line"></i> 保存策略
-</button>
-</div>
-</div>
-
-<div class="section">
-<div class="section-title"><i class="ri ri-information-line"></i> 权限评估</div>
-<div id="permission-eval" style="font-size: 0.85rem; line-height: 1.6;">
-<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-<span class="status-dot status-active"></span>
-<span style="color: var(--accent-green); font-weight: 500;">ALLOW</span>
-<span style="color: var(--text-secondary);">— 当前配置将允许访问</span>
-</div>
-<div style="color: var(--text-muted); font-size: 0.8rem;">
-匹配策略：开发者工作流读写权限
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Modal -->
-<div class="modal-overlay" id="policy-modal" style="display: none;">
-<div class="modal">
-<div class="modal-header">
-<div class="modal-title">新建 ABAC 策略</div>
-<button class="modal-close" onclick="hideModal()"><i class="ri ri-close-line"></i></button>
-</div>
-<div class="form-group">
-<label class="form-label">策略名称</label>
-<input type="text" class="form-input" id="policy-name" placeholder="输入策略名称">
-</div>
-<div class="form-group">
-<label class="form-label">策略效果</label>
-<select class="form-select" id="policy-effect">
-<option value="ALLOW">ALLOW（允许）</option>
-<option value="DENY">DENY（拒绝）</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">策略描述</label>
-<textarea class="form-textarea" id="policy-desc" placeholder="输入策略描述..."></textarea>
-</div>
-<div class="btn-group" style="justify-content: flex-end; margin-top: 20px;">
-<button class="btn btn-secondary" onclick="hideModal()">取消</button>
-<button class="btn btn-primary" onclick="createPolicy()">创建</button>
 </div>
 </div>
 </div>
 
 <script>
-const resourceMap = {
-    'global': { type: '全局', icon: 'ri-global-line' },
-    'workflow': { type: '工作流', icon: 'ri-flow-chart' },
-    'agent': { type: '智能体', icon: 'ri-robot-line' },
-    'evalset': { type: '评测集', icon: 'ri-bar-chart-box-line' },
-    'skill': { type: 'Skill', icon: 'ri-tools-line' }
+const policies = [
+    {
+        id: "P-WF-005", type: "workflow", name: "工作流默认不可见", action: "read",
+        condition: "<code>resource.visibility_scope = private</code> 且非 owner 且非租户管理员",
+        decision: "deny", obligation: "默认私有，提示通过租户服务分享"
+    },
+    {
+        id: "P-WF-006", type: "workflow", name: "租户服务分享后允许查看工作流", action: "read",
+        condition: "存在有效 <code>tenant_share</code>，且包含 view 权限",
+        decision: "allow", obligation: "记录分享访问来源"
+    },
+    {
+        id: "P-WF-007", type: "workflow", name: "分享编辑范围允许编辑工作流", action: "edit",
+        condition: "存在有效 <code>tenant_share</code>，且包含 edit 权限",
+        decision: "allow", obligation: "记录编辑访问来源"
+    },
+    {
+        id: "P-WF-008", type: "workflow", name: "行长可访问下辖机构工作流", action: "read",
+        condition: "用户为行长/部门负责人，资源机构属于其管辖机构树",
+        decision: "allow", obligation: "按机构树范围授权"
+    },
+    {
+        id: "P-WF-009", type: "workflow", name: "禁止绕过租户服务转移工作流", action: "transfer",
+        condition: "请求来源不是 <code>tenant_service</code>",
+        decision: "deny", obligation: "记录安全事件"
+    },
+    {
+        id: "P-WF-010", type: "workflow", name: "工作流转移需要租户管理员审批", action: "transfer",
+        condition: "owner 发起，目标 owner 有效，且通过租户服务",
+        decision: "approval", obligation: "租户管理员审批，透传资源服务"
+    },
+    {
+        id: "P-WF-011", type: "workflow", name: "工作流审核角色可审核发布", action: "review",
+        condition: "用户具备 <code>workflow_reviewer</code>，资源待审核，同租户",
+        decision: "allow", obligation: "要求审核意见并记录日志"
+    },
+    {
+        id: "P-WF-012", type: "workflow", name: "系统管理员设置工作流可见范围", action: "grant_permission",
+        condition: "系统管理员通过租户服务设置 view/edit",
+        decision: "allow", obligation: "写入租户 ACL，透传工作流服务"
+    },
+    {
+        id: "P-WF-013", type: "workflow", name: "工作流可见范围并发修改冲突拒绝", action: "grant_permission",
+        condition: "请求 <code>acl_version</code> 小于资源当前版本",
+        decision: "deny", obligation: "要求刷新最新 ACL 快照"
+    },
+    {
+        id: "P-SK-004", type: "skill", name: "Skill 默认不可见", action: "read",
+        condition: "私有资源，非 owner，且无分享授权",
+        decision: "deny", obligation: "默认私有，提示配置可见范围"
+    },
+    {
+        id: "P-SK-005", type: "skill", name: "系统管理员设置 Skill 可见范围", action: "grant_permission",
+        condition: "系统管理员通过租户服务设置 view/edit",
+        decision: "allow", obligation: "写入租户 ACL，透传 Skill 服务"
+    },
+    {
+        id: "P-SK-006", type: "skill", name: "Skill 审核角色可审核发布", action: "review",
+        condition: "用户具备 <code>skill_reviewer</code>，资源待审核，同租户",
+        decision: "allow", obligation: "要求审核意见并记录日志"
+    },
+    {
+        id: "P-DS-004", type: "dataset", name: "数据集默认不可见", action: "read",
+        condition: "私有资源，非 owner，且无分享授权",
+        decision: "deny", obligation: "默认私有，提示通过租户服务分享"
+    },
+    {
+        id: "P-DS-005", type: "dataset", name: "租户服务分享后允许查看数据集", action: "read",
+        condition: "存在有效 <code>tenant_share</code>，且包含 view 权限",
+        decision: "allow", obligation: "按数据等级脱敏，记录分享访问"
+    },
+    {
+        id: "P-DS-006", type: "dataset", name: "系统管理员查询用户跨服务数据权限", action: "query_permission",
+        condition: "系统管理员查询同租户用户权限",
+        decision: "allow", obligation: "返回数据集、工作流、Skill 数量摘要"
+    },
+    {
+        id: "P-DS-007", type: "dataset", name: "系统管理员调整用户数据权限并透传", action: "grant_permission",
+        condition: "系统管理员通过租户服务设置 view/edit",
+        decision: "allow", obligation: "写入租户 ACL，透传各业务服务"
+    },
+    {
+        id: "P-DS-008", type: "dataset", name: "禁止业务服务本地修改数据权限", action: "grant_permission",
+        condition: "请求来源不是 <code>tenant_service</code>",
+        decision: "deny", obligation: "租户服务作为权限唯一权威源"
+    },
+    {
+        id: "P-DS-009", type: "dataset", name: "行长多部门数据集权限汇总", action: "read",
+        condition: "行长/负责人管辖机构与资源机构路径有交集",
+        decision: "allow", obligation: "返回按机构树聚合的权限摘要"
+    },
+    {
+        id: "P-TOL-003", type: "tool", name: "租户权限管理 API 仅管理员可调用", action: "call",
+        condition: "系统管理员，从管理控制台发起，同租户",
+        decision: "allow", obligation: "要求 MFA，记录管理员操作"
+    },
+    {
+        id: "P-TOL-004", type: "tool", name: "资源分享转移 API 只接受租户服务", action: "call",
+        condition: "请求来源不是 <code>tenant_service</code>",
+        decision: "deny", obligation: "拒绝绕过租户服务"
+    },
+    {
+        id: "P-TOL-005", type: "tool", name: "管理员在线查询各服务数据权限", action: "call",
+        condition: "系统管理员查询同租户用户，通过租户服务",
+        decision: "allow", obligation: "扇出查询工作流、数据集、Skill、知识库"
+    },
+    {
+        id: "P-TOL-006", type: "tool", name: "普通用户仅查询本人权限摘要", action: "call",
+        condition: "查询目标用户等于当前用户，响应模式为 summary",
+        decision: "allow", obligation: "隐藏管理员字段"
+    },
+    {
+        id: "P-KB-003", type: "kb", name: "知识库默认不可见", action: "read",
+        condition: "私有资源，非 owner，且无分享授权",
+        decision: "deny", obligation: "默认私有，提示配置可见范围"
+    },
+    {
+        id: "P-KB-004", type: "kb", name: "机构上下级继承知识库可见范围", action: "read",
+        condition: "可见范围为机构树，用户机构是可见机构下级",
+        decision: "allow", obligation: "按机构树读取，要求引用来源"
+    },
+    {
+        id: "P-KB-005", type: "kb", name: "知识库审核角色可审核发布", action: "review",
+        condition: "用户具备 <code>knowledge_reviewer</code>，资源待审核，同租户",
+        decision: "allow", obligation: "要求审核意见并记录日志"
+    }
+];
+
+const typeLabels = {
+    workflow: { label: "工作流", class: "tag-wf" },
+    skill: { label: "Skill", class: "tag-skill" },
+    dataset: { label: "数据集", class: "tag-ds" },
+    tool: { label: "工具/API", class: "tag-tol" },
+    kb: { label: "知识库", class: "tag-kb" }
 };
 
-let currentResource = 'workflow';
+const decisionLabels = {
+    allow: { label: "allow", class: "tag-allow" },
+    deny: { label: "deny", class: "tag-deny" },
+    approval: { label: "approval_required", class: "tag-approval" }
+};
 
-function selectResource(type) {
-    currentResource = type;
-    document.querySelectorAll('.resource-card').forEach(card => card.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    document.getElementById('resource-type').value = resourceMap[type].type;
-    updatePreview();
-}
+let currentTypeFilter = "all";
+let currentDecisionFilter = "all";
+let selectedPolicy = null;
 
-function switchTab(tab, groupId) {
-    tab.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    document.querySelectorAll('.operation-group').forEach(g => g.style.display = 'none');
-    document.getElementById(groupId).style.display = 'block';
-}
-
-function updatePreview() {
-    const preview = {
-        policy: {
-            name: "策略预览",
-            effect: "ALLOW",
-            resource: {
-                type: document.getElementById('resource-type').value.toLowerCase(),
-                tenant_id: document.getElementById('resource-tenant').value,
-                status: document.getElementById('resource-status').value,
-                security_level: document.getElementById('resource-security').value
-            },
-            subject: {
-                tenant: document.getElementById('subject-tenant').value,
-                organization: document.getElementById('subject-org').value,
-                department: document.getElementById('subject-dept').value,
-                audit_level: document.getElementById('subject-audit').value
-            },
-            operations: getSelectedOperations(),
-            conditions: {}
-        }
-    };
-    document.getElementById('policy-preview').textContent = JSON.stringify(preview, null, 2);
-}
-
-function getSelectedOperations() {
-    const ops = [];
-    document.querySelectorAll('.operation-group input[type="checkbox"]:checked').forEach(cb => {
-        ops.push(cb.parentElement.textContent.trim());
+function renderTable() {
+    const tbody = document.getElementById("policy-table");
+    const filtered = policies.filter(p => {
+        if (currentTypeFilter !== "all" && p.type !== currentTypeFilter) return false;
+        if (currentDecisionFilter !== "all" && p.decision !== currentDecisionFilter) return false;
+        return true;
     });
-    return ops;
+
+    tbody.innerHTML = filtered.map(p => `
+        <tr onclick="selectPolicy('${p.id}')" class="${selectedPolicy === p.id ? 'selected' : ''}">
+            <td><code style="font-size: 0.8rem; color: var(--text-muted);">${p.id}</code></td>
+            <td><span class="tag ${typeLabels[p.type].class}">${typeLabels[p.type].label}</span></td>
+            <td style="font-weight: 500;">${p.name}</td>
+            <td><code style="font-size: 0.8rem;">${p.action}</code></td>
+            <td class="condition-text">${p.condition}</td>
+            <td><span class="tag ${decisionLabels[p.decision].class}">${decisionLabels[p.decision].label}</span></td>
+            <td style="font-size: 0.82rem; color: var(--text-secondary);">${p.obligation}</td>
+        </tr>
+    `).join("");
 }
 
-function showModal() {
-    document.getElementById('policy-modal').style.display = 'flex';
+function filterByType(type) {
+    currentTypeFilter = type;
+    document.querySelectorAll(".resource-item").forEach(el => el.classList.remove("active"));
+    event.currentTarget.classList.add("active");
+    renderTable();
 }
 
-function hideModal() {
-    document.getElementById('policy-modal').style.display = 'none';
+function filterByDecision(decision) {
+    currentDecisionFilter = decision;
+    renderTable();
 }
 
-function createPolicy() {
-    const name = document.getElementById('policy-name').value;
-    const effect = document.getElementById('policy-effect').value;
-    if (!name) { alert('请输入策略名称'); return; }
-    
-    const policyCard = document.createElement('div');
-    policyCard.className = 'policy-card';
-    policyCard.innerHTML = `
-        <div class="policy-header">
-            <div class="policy-name">${name}</div>
-            <div class="policy-status">
-                <span class="status-dot status-active"></span>
-                <span>启用</span>
-            </div>
+function selectPolicy(id) {
+    selectedPolicy = id;
+    const p = policies.find(x => x.id === id);
+    if (!p) return;
+
+    const card = document.getElementById("detail-card");
+    card.innerHTML = `
+        <div class="detail-title">${p.name}</div>
+        <div class="detail-id">${p.id}</div>
+        
+        <div class="detail-section">
+            <div class="detail-label">资源类型</div>
+            <div class="detail-value"><span class="tag ${typeLabels[p.type].class}">${typeLabels[p.type].label}</span></div>
         </div>
-        <div style="display: flex; gap: 8px; margin-top: 12px;">
-            <span class="tag ${effect === 'ALLOW' ? 'tag-green' : 'tag-red'}">${effect}</span>
-            <span class="tag tag-blue">${resourceMap[currentResource].type}</span>
+        
+        <div class="detail-section">
+            <div class="detail-label">动作</div>
+            <div class="detail-value"><code>${p.action}</code></div>
+        </div>
+        
+        <div class="detail-section">
+            <div class="detail-label">决策</div>
+            <div class="detail-value"><span class="tag ${decisionLabels[p.decision].class}" style="font-size: 0.9rem;">${decisionLabels[p.decision].label}</span></div>
+        </div>
+        
+        <div class="detail-section">
+            <div class="detail-label">条件</div>
+            <div class="detail-code">${p.condition}</div>
+        </div>
+        
+        <div class="detail-section">
+            <div class="detail-label">附加义务</div>
+            <div class="detail-obligation">${p.obligation}</div>
         </div>
     `;
-    document.getElementById('policies-list').appendChild(policyCard);
-    hideModal();
-    document.getElementById('policy-name').value = '';
+
+    renderTable();
 }
 
-function savePolicy() {
-    alert('策略已保存（示例）');
-}
+// Initial render
+renderTable();
 </script>
 </body>
 </html>
