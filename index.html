@@ -204,7 +204,7 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, Bl
 <div class="preview-panel">
 <div class="preview-card">
 <div class="preview-header">
-<div class="preview-title">策略预览 (JSON)</div>
+<div class="preview-title">策略预览 (SQL)</div>
 <button class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.8rem;" onclick="copyJSON()">
 <i class="ri ri-file-copy-line"></i> 复制
 </button>
@@ -462,20 +462,53 @@ function cancelEdit() {
 
 function updatePreview() {
     const p = getCurrentPolicyData();
-    const preview = {
-        policy_id: p.id || "P-XXX-000",
-        resource_type: p.type,
-        name: p.name || "策略名称",
-        action: p.action,
-        conditions: (p.conditions || []).map(c => ({
-            attribute: c.attr,
-            operator: c.op,
-            value: c.value
-        })),
-        decision: p.decision,
-        obligation: p.obligation || null
-    };
-    document.getElementById('preview-json').textContent = JSON.stringify(preview, null, 2);
+    
+    // Build SQL preview
+    const conditions = (p.conditions || []);
+    const whereClauses = conditions.map(c => {
+        const val = c.value.startsWith('requester.') || c.value.startsWith('resource.') || c.value.startsWith('request.') || c.value.startsWith('tenant_share.') 
+            ? c.value : `'${c.value}'`;
+        
+        switch(c.op) {
+            case '=': return `${c.attr} = ${val}`;
+            case '!=': return `${c.attr} != ${val}`;
+            case 'contains': return `${c.attr} CONTAINS ${val}`;
+            case 'in': return `${c.attr} IN (${c.value.split(',').map(v => `'${v.trim()}'`).join(', ')})`;
+            case 'not_in': return `${c.attr} NOT IN (${c.value.split(',').map(v => `'${v.trim()}'`).join(', ')})`;
+            case 'under': return `${c.attr} UNDER ${val}`;
+            case '>': return `${c.attr} > ${val}`;
+            case '<': return `${c.attr} < ${val}`;
+            case '>=': return `${c.attr} >= ${val}`;
+            case '<=': return `${c.attr} <= ${val}`;
+            default: return `${c.attr} ${c.op} ${val}`;
+        }
+    });
+    
+    const decisionMap = { 'allow': 'ALLOW', 'deny': 'DENY', 'approval_required': 'APPROVAL_REQUIRED' };
+    const actionMap = { 'read': 'READ', 'edit': 'EDIT', 'transfer': 'TRANSFER', 'review': 'REVIEW', 'grant_permission': 'GRANT_PERMISSION', 'query_permission': 'QUERY_PERMISSION', 'call': 'CALL' };
+    
+    let sql = `-- 策略: ${p.name || '策略名称'}\n`;
+    sql += `-- 策略ID: ${p.id || 'P-XXX-000'}\n`;
+    sql += `-- 资源类型: ${getTypeLabel(p.type)}\n\n`;
+    sql += `CREATE POLICY ${p.id || 'policy_id'}\n`;
+    sql += `  ON ${p.type}_resources\n`;
+    sql += `  FOR ${actionMap[p.action] || p.action.toUpperCase()}\n`;
+    sql += `  USING (\n`;
+    
+    if (whereClauses.length === 0) {
+    sql += `    -- 无条件\n`;
+    } else {
+    sql += whereClauses.map(c => `    ${c}`).join('\n AND\n');
+    }
+    
+    sql += `\n  )\n`;
+    sql += `  ${decisionMap[p.decision] || p.decision.toUpperCase()}`;
+    
+    if (p.obligation) {
+    sql += `\n  -- 附加义务: ${p.obligation}`;
+    }
+    
+    document.getElementById('preview-json').textContent = sql;
 }
 
 function updateStats() {
