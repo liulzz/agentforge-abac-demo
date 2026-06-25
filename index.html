@@ -186,10 +186,7 @@ body { background: var(--bg); color: var(--text); font-family: -apple-system, Bl
 <i class="ri ri-add-circle-line"></i> 添加条件
 </div>
 </div>
-<div class="form-group full">
-<label class="form-label">附加义务</label>
-<textarea class="form-textarea" id="input-obligation" placeholder="策略生效时需要执行的附加操作，如：记录日志、要求审批等"></textarea>
-</div>
+
 </div>
 
 <div class="btn-group">
@@ -323,7 +320,7 @@ function selectPolicy(index) {
     document.getElementById('input-name').value = p.name;
     document.getElementById('input-action').value = p.action;
     document.getElementById('input-decision').value = p.decision;
-    document.getElementById('input-obligation').value = p.obligation;
+
     
     renderConditions(p.conditions);
     updatePreview();
@@ -341,7 +338,7 @@ function createNewPolicy() {
     document.getElementById('input-name').value = '';
     document.getElementById('input-action').value = 'read';
     document.getElementById('input-decision').value = 'allow';
-    document.getElementById('input-obligation').value = '';
+
     
     renderConditions([]);
     updatePreview();
@@ -421,7 +418,6 @@ function savePolicy() {
         name: document.getElementById('input-name').value.trim(),
         action: document.getElementById('input-action').value,
         decision: document.getElementById('input-decision').value,
-        obligation: document.getElementById('input-obligation').value.trim(),
         conditions: editingIndex >= 0 ? policies[editingIndex].conditions : []
     };
     
@@ -506,10 +502,6 @@ function updatePreview() {
     }
     
     sql += `\n`;
-    
-    if (p.obligation) {
-    sql += `\n-- 附加义务:\n-- ${p.obligation}`;
-    }
     
     document.getElementById('preview-json').textContent = sql;
 }
