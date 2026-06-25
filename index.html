@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentForge · ABAC 权限配置</title>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+<style>
+:root {
+    --bg: #0d1117;
+    --bg-secondary: #161b22;
+    --card: #161b22;
+    --border: #21262d;
+    --border-soft: #21262d66;
+    --text: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #484f58;
+    --accent-blue: #58a6ff;
+    --accent-green: #3fb950;
+    --accent-orange: #d29922;
+    --accent-red: #f85149;
+    --accent-purple: #8b5cf6;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+/* Header */
+.header { padding: 24px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+.header h1 { font-size: 1.6rem; display: flex; align-items: center; gap: 12px; }
+.header h1 i { color: var(--accent-blue); }
+.header p { color: var(--text-secondary); margin-top: 8px; font-size: 0.9rem; }
+
+/* Layout */
+.main-layout { display: grid; grid-template-columns: 300px 1fr 320px; gap: 20px; }
+
+/* Sidebar */
+.sidebar { position: sticky; top: 20px; height: fit-content; }
+.resource-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; cursor: pointer; transition: all 0.2s; }
+.resource-card:hover { border-color: var(--accent-blue); background: rgba(88,166,255,0.05); }
+.resource-card.active { border-color: var(--accent-blue); background: rgba(88,166,255,0.1); box-shadow: 0 0 0 1px var(--accent-blue); }
+.resource-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 12px; }
+.resource-name { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
+.resource-desc { font-size: 0.8rem; color: var(--text-secondary); }
+
+/* Content */
+.content { min-height: 600px; }
+.section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.section-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.section-title i { color: var(--accent-blue); }
+
+/* Form Elements */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; }
+.form-input, .form-select, .form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+.form-select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b949e' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.form-textarea { min-height: 100px; resize: vertical; }
+
+/* Tags */
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; }
+.tag-blue { background: rgba(88,166,255,0.15); color: var(--accent-blue); }
+.tag-green { background: rgba(63,185,80,0.15); color: var(--accent-green); }
+.tag-orange { background: rgba(210,153,34,0.15); color: var(--accent-orange); }
+.tag-red { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+.tag-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+
+/* Tags Container */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.tag-item { display: flex; align-items: center; gap: 6px; }
+.tag-remove { cursor: pointer; opacity: 0.6; transition: opacity 0.2s; }
+.tag-remove:hover { opacity: 1; }
+
+/* Add Tag */
+.add-tag { display: flex; gap: 8px; margin-top: 8px; }
+.add-tag input { flex: 1; }
+
+/* Policy Card */
+.policy-card { background: var(--bg); border: 1px solid var(--border-soft); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+.policy-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.policy-name { font-weight: 600; font-size: 0.95rem; }
+.policy-status { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.status-active { background: var(--accent-green); }
+.status-inactive { background: var(--text-muted); }
+
+/* Condition */
+.condition { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg-secondary); border-radius: 6px; margin-bottom: 8px; }
+.condition-key { font-weight: 500; color: var(--accent-blue); min-width: 80px; }
+.condition-op { color: var(--accent-orange); font-weight: 500; }
+.condition-value { color: var(--accent-green); }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.2s; border: none; }
+.btn-primary { background: var(--accent-blue); color: #fff; }
+.btn-primary:hover { background: #4090e0; }
+.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--bg-secondary); border-color: var(--text-muted); }
+.btn-danger { background: rgba(248,81,73,0.15); color: var(--accent-red); }
+.btn-danger:hover { background: rgba(248,81,73,0.25); }
+.btn-group { display: flex; gap: 8px; }
+
+/* Preview */
+.preview-panel { position: sticky; top: 20px; height: fit-content; }
+.preview-code { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); overflow-x: auto; }
+.preview-code pre { white-space: pre-wrap; }
+
+/* Switch */
+.switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--border); transition: 0.3s; border-radius: 24px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition: 0.3s; border-radius: 50%; }
+input:checked + .slider { background: var(--accent-green); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; padding: 4px; background: var(--bg); border-radius: 8px; margin-bottom: 16px; }
+.tab { padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: var(--text-secondary); transition: all 0.2s; }
+.tab:hover { color: var(--text); background: var(--bg-secondary); }
+.tab.active { background: var(--accent-blue); color: #fff; }
+
+/* Modal */
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-title { font-size: 1.2rem; font-weight: 600; }
+.modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.2rem; }
+.modal-close:hover { color: var(--text); }
+
+/* Table */
+.table { width: 100%; border-collapse: collapse; }
+.table th { padding: 10px 12px; text-align: left; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; }
+.table td { padding: 10px 12px; border-bottom: 1px solid var(--border-soft); font-size: 0.85rem; }
+
+/* Responsive */
+@media (max-width: 1200px) { .main-layout { grid-template-columns: 1fr; } .sidebar, .preview-panel { position: static; } }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1><i class="ri ri-shield-check-line"></i> AgentForge · ABAC 权限配置</h1>
+<p>基于属性的访问控制（Attribute-Based Access Control）策略管理</p>
+</div>
+
+<div class="main-layout">
+<!-- Left Sidebar - Resource Types -->
+<div class="sidebar">
+<div class="section-title" style="margin-bottom: 12px;"><i class="ri ri-folder-line"></i> 资源类型</div>
+
+<div class="resource-card active" onclick="selectResource('workflow')">
+<div class="resource-icon" style="background: rgba(88,166,255,0.15); color: var(--accent-blue);">
+<i class="ri ri-flow-chart"></i>
+</div>
+<div class="resource-name">工作流</div>
+<div class="resource-desc">Agent 执行流程编排</div>
+</div>
+
+<div class="resource-card" onclick="selectResource('agent')">
+<div class="resource-icon" style="background: rgba(63,185,80,0.15); color: var(--accent-green);">
+<i class="ri ri-robot-line"></i>
+</div>
+<div class="resource-name">智能体</div>
+<div class="resource-desc">AI Agent 配置管理</div>
+</div>
+
+<div class="resource-card" onclick="selectResource('evalset')">
+<div class="resource-icon" style="background: rgba(210,153,34,0.15); color: var(--accent-orange);">
+<i class="ri ri-bar-chart-box-line"></i>
+</div>
+<div class="resource-name">评测集</div>
+<div class="resource-desc">Benchmark 数据集</div>
+</div>
+
+<div class="resource-card" onclick="selectResource('skill')">
+<div class="resource-icon" style="background: rgba(139,92,246,0.15); color: var(--accent-purple);">
+<i class="ri ri-tools-line"></i>
+</div>
+<div class="resource-name">Skill</div>
+<div class="resource-desc">可复用能力组件</div>
+</div>
+</div>
+
+<!-- Center Content -->
+<div class="content">
+<!-- Subject Attributes -->
+<div class="section">
+<div class="section-title"><i class="ri ri-user-line"></i> 主体属性（Subject）</div>
+<div class="form-grid">
+<div class="form-group">
+<label class="form-label">用户角色</label>
+<select class="form-select" id="subject-role" onchange="updatePreview()">
+<option value="admin">管理员</option>
+<option value="developer" selected>开发者</option>
+<option value="operator">运维人员</option>
+<option value="viewer">只读用户</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">所属部门</label>
+<select class="form-select" id="subject-dept" onchange="updatePreview()">
+<option value="engineering" selected>工程部</option>
+<option value="product">产品部</option>
+<option value="operations">运维部</option>
+<option value="security">安全部</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">安全等级</label>
+<select class="form-select" id="subject-security" onchange="updatePreview()">
+<option value="public">公开</option>
+<option value="internal" selected>内部</option>
+<option value="confidential">机密</option>
+<option value="secret">绝密</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">组织单元</label>
+<select class="form-select" id="subject-org" onchange="updatePreview()">
+<option value="team-a" selected>团队A</option>
+<option value="team-b">团队B</option>
+<option value="team-c">团队C</option>
+</select>
+</div>
+</div>
+</div>
+
+<!-- Resource Attributes -->
+<div class="section">
+<div class="section-title"><i class="ri ri-folder-line"></i> 资源属性（Resource）</div>
+<div class="form-grid">
+<div class="form-group">
+<label class="form-label">资源类型</label>
+<input type="text" class="form-input" id="resource-type" value="工作流" readonly>
+</div>
+<div class="form-group">
+<label class="form-label">资源状态</label>
+<select class="form-select" id="resource-status" onchange="updatePreview()">
+<option value="draft">草稿</option>
+<option value="published" selected>已发布</option>
+<option value="archived">已归档</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">安全等级</label>
+<select class="form-select" id="resource-security" onchange="updatePreview()">
+<option value="public">公开</option>
+<option value="internal" selected>内部</option>
+<option value="confidential">机密</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">所属租户</label>
+<input type="text" class="form-input" id="resource-tenant" value="tenant-001" onchange="updatePreview()">
+</div>
+</div>
+</div>
+
+<!-- Operations -->
+<div class="section">
+<div class="section-title"><i class="ri ri-settings-3-line"></i> 操作权限（Operations）</div>
+<div class="tabs">
+<div class="tab active" onclick="switchTab(this, 'basic-ops')">基础操作</div>
+<div class="tab" onclick="switchTab(this, 'advanced-ops')">高级操作</div>
+<div class="tab" onclick="switchTab(this, 'admin-ops')">管理操作</div>
+</div>
+
+<div id="basic-ops" class="operation-group">
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" checked onchange="updatePreview()"> <span>查看</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" checked onchange="updatePreview()"> <span>读取</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" checked onchange="updatePreview()"> <span>创建</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>编辑</span>
+</label>
+</div>
+</div>
+
+<div id="advanced-ops" class="operation-group" style="display: none;">
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>执行</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>调试</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>发布</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>回滚</span>
+</label>
+</div>
+</div>
+
+<div id="admin-ops" class="operation-group" style="display: none;">
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>删除</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>权限管理</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>审计日志</span>
+</label>
+<label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+<input type="checkbox" onchange="updatePreview()"> <span>系统配置</span>
+</label>
+</div>
+</div>
+</div>
+
+<!-- Environment Attributes -->
+<div class="section">
+<div class="section-title"><i class="ri ri-global-line"></i> 环境属性（Environment）</div>
+<div class="form-grid">
+<div class="form-group">
+<label class="form-label">访问时间</label>
+<select class="form-select" id="env-time" onchange="updatePreview()">
+<option value="business-hours" selected>工作时间 (9:00-18:00)</option>
+<option value="after-hours">非工作时间</option>
+<option value="anytime">不限</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">访问来源</label>
+<select class="form-select" id="env-source" onchange="updatePreview()">
+<option value="internal-network" selected>内网</option>
+<option value="vpn">VPN</option>
+<option value="external">外网</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">设备类型</label>
+<select class="form-select" id="env-device" onchange="updatePreview()">
+<option value="desktop" selected>桌面端</option>
+<option value="mobile">移动端</option>
+<option value="any">不限</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">认证方式</label>
+<select class="form-select" id="env-auth" onchange="updatePreview()">
+<option value="sso" selected>SSO</option>
+<option value="mfa">MFA</option>
+<option value="password">密码</option>
+</select>
+</div>
+</div>
+</div>
+
+<!-- Existing Policies -->
+<div class="section">
+<div class="section-title" style="display: flex; justify-content: space-between;">
+<span><i class="ri ri-list-check"></i> 已配置策略</span>
+<button class="btn btn-primary" onclick="showModal()"><i class="ri ri-add-line"></i> 新建策略</button>
+</div>
+
+<div id="policies-list">
+<div class="policy-card">
+<div class="policy-header">
+<div class="policy-name">开发者工作流读写权限</div>
+<div class="policy-status">
+<span class="status-dot status-active"></span>
+<span>启用</span>
+</div>
+</div>
+<div class="condition">
+<span class="condition-key">角色</span>
+<span class="condition-op">=</span>
+<span class="condition-value">developer</span>
+</div>
+<div class="condition">
+<span class="condition-key">资源类型</span>
+<span class="condition-op">=</span>
+<span class="condition-value">workflow</span>
+</div>
+<div class="condition">
+<span class="condition-key">操作</span>
+<span class="condition-op">in</span>
+<span class="condition-value">[read, create, edit]</span>
+</div>
+<div style="display: flex; gap: 8px; margin-top: 12px;">
+<span class="tag tag-green">ALLOW</span>
+<span class="tag tag-blue">工作流</span>
+</div>
+</div>
+
+<div class="policy-card">
+<div class="policy-header">
+<div class="policy-name">机密资源访问控制</div>
+<div class="policy-status">
+<span class="status-dot status-active"></span>
+<span>启用</span>
+</div>
+</div>
+<div class="condition">
+<span class="condition-key">安全等级</span>
+<span class="condition-op">=</span>
+<span class="condition-value">confidential</span>
+</div>
+<div class="condition">
+<span class="condition-key">部门</span>
+<span class="condition-op">=</span>
+<span class="condition-value">security</span>
+</div>
+<div class="condition">
+<span class="condition-key">认证</span>
+<span class="condition-op">=</span>
+<span class="condition-value">mfa</span>
+</div>
+<div style="display: flex; gap: 8px; margin-top: 12px;">
+<span class="tag tag-red">DENY</span>
+<span class="tag tag-purple">全局</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Right Preview Panel -->
+<div class="preview-panel">
+<div class="section">
+<div class="section-title"><i class="ri ri-code-line"></i> 策略预览</div>
+<div class="preview-code">
+<pre id="policy-preview">{
+  "policy": {
+    "name": "开发者工作流读写权限",
+    "effect": "ALLOW",
+    "resource": {
+      "type": "workflow",
+      "tenant_id": "tenant-001"
+    },
+    "subject": {
+      "role": "developer",
+      "department": "engineering",
+      "security_level": "internal"
+    },
+    "operations": [
+      "read",
+      "create"
+    ],
+    "conditions": {
+      "time": "business-hours",
+      "source": "internal-network",
+      "device": "desktop",
+      "auth": "sso"
+    }
+  }
+}</pre>
+</div>
+<div style="margin-top: 12px;">
+<button class="btn btn-primary" style="width: 100%;" onclick="savePolicy()">
+<i class="ri ri-save-line"></i> 保存策略
+</button>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title"><i class="ri ri-information-line"></i> 权限评估</div>
+<div id="permission-eval" style="font-size: 0.85rem; line-height: 1.6;">
+<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+<span class="status-dot status-active"></span>
+<span style="color: var(--accent-green); font-weight: 500;">ALLOW</span>
+<span style="color: var(--text-secondary);">— 当前配置将允许访问</span>
+</div>
+<div style="color: var(--text-muted); font-size: 0.8rem;">
+匹配策略：开发者工作流读写权限
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="policy-modal" style="display: none;">
+<div class="modal">
+<div class="modal-header">
+<div class="modal-title">新建 ABAC 策略</div>
+<button class="modal-close" onclick="hideModal()"><i class="ri ri-close-line"></i></button>
+</div>
+<div class="form-group">
+<label class="form-label">策略名称</label>
+<input type="text" class="form-input" id="policy-name" placeholder="输入策略名称">
+</div>
+<div class="form-group">
+<label class="form-label">策略效果</label>
+<select class="form-select" id="policy-effect">
+<option value="ALLOW">ALLOW（允许）</option>
+<option value="DENY">DENY（拒绝）</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">策略描述</label>
+<textarea class="form-textarea" id="policy-desc" placeholder="输入策略描述..."></textarea>
+</div>
+<div class="btn-group" style="justify-content: flex-end; margin-top: 20px;">
+<button class="btn btn-secondary" onclick="hideModal()">取消</button>
+<button class="btn btn-primary" onclick="createPolicy()">创建</button>
+</div>
+</div>
+</div>
+
+<script>
+const resourceMap = {
+    'workflow': { type: '工作流', icon: 'ri-flow-chart' },
+    'agent': { type: '智能体', icon: 'ri-robot-line' },
+    'evalset': { type: '评测集', icon: 'ri-bar-chart-box-line' },
+    'skill': { type: 'Skill', icon: 'ri-tools-line' }
+};
+
+let currentResource = 'workflow';
+
+function selectResource(type) {
+    currentResource = type;
+    document.querySelectorAll('.resource-card').forEach(card => card.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById('resource-type').value = resourceMap[type].type;
+    updatePreview();
+}
+
+function switchTab(tab, groupId) {
+    tab.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.operation-group').forEach(g => g.style.display = 'none');
+    document.getElementById(groupId).style.display = 'block';
+}
+
+function updatePreview() {
+    const preview = {
+        policy: {
+            name: "策略预览",
+            effect: "ALLOW",
+            resource: {
+                type: document.getElementById('resource-type').value.toLowerCase(),
+                tenant_id: document.getElementById('resource-tenant').value,
+                status: document.getElementById('resource-status').value,
+                security_level: document.getElementById('resource-security').value
+            },
+            subject: {
+                role: document.getElementById('subject-role').value,
+                department: document.getElementById('subject-dept').value,
+                security_level: document.getElementById('subject-security').value,
+                org_unit: document.getElementById('subject-org').value
+            },
+            operations: getSelectedOperations(),
+            conditions: {
+                time: document.getElementById('env-time').value,
+                source: document.getElementById('env-source').value,
+                device: document.getElementById('env-device').value,
+                auth: document.getElementById('env-auth').value
+            }
+        }
+    };
+    document.getElementById('policy-preview').textContent = JSON.stringify(preview, null, 2);
+}
+
+function getSelectedOperations() {
+    const ops = [];
+    document.querySelectorAll('.operation-group input[type="checkbox"]:checked').forEach(cb => {
+        ops.push(cb.parentElement.textContent.trim());
+    });
+    return ops;
+}
+
+function showModal() {
+    document.getElementById('policy-modal').style.display = 'flex';
+}
+
+function hideModal() {
+    document.getElementById('policy-modal').style.display = 'none';
+}
+
+function createPolicy() {
+    const name = document.getElementById('policy-name').value;
+    const effect = document.getElementById('policy-effect').value;
+    if (!name) { alert('请输入策略名称'); return; }
+    
+    const policyCard = document.createElement('div');
+    policyCard.className = 'policy-card';
+    policyCard.innerHTML = `
+        <div class="policy-header">
+            <div class="policy-name">${name}</div>
+            <div class="policy-status">
+                <span class="status-dot status-active"></span>
+                <span>启用</span>
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+            <span class="tag ${effect === 'ALLOW' ? 'tag-green' : 'tag-red'}">${effect}</span>
+            <span class="tag tag-blue">${resourceMap[currentResource].type}</span>
+        </div>
+    `;
+    document.getElementById('policies-list').appendChild(policyCard);
+    hideModal();
+    document.getElementById('policy-name').value = '';
+}
+
+function savePolicy() {
+    alert('策略已保存（示例）');
+}
+</script>
+</body>
+</html>
