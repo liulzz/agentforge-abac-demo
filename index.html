@@ -3,418 +3,507 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgentForge · ABAC 权限配置</title>
+<title>AgentForge · ABAC 策略配置</title>
 <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 <style>
 :root {
-    --bg: #f6f8fa;
-    --bg-secondary: #ffffff;
-    --card: #ffffff;
-    --border: #d0d7de;
-    --border-soft: #d0d7de66;
-    --text: #1f2328;
-    --text-secondary: #656d76;
-    --text-muted: #8b949e;
-    --accent-blue: #0969da;
-    --accent-green: #1a7f37;
-    --accent-orange: #bf8700;
-    --accent-red: #cf222e;
-    --accent-purple: #8250df;
+    --bg: #f6f8fa; --bg-secondary: #ffffff; --card: #ffffff;
+    --border: #d0d7de; --text: #1f2328; --text-secondary: #656d76; --text-muted: #8b949e;
+    --accent-blue: #0969da; --accent-green: #1a7f37; --accent-orange: #bf8700;
+    --accent-red: #cf222e; --accent-purple: #8250df;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; }
 .container { max-width: 1600px; margin: 0 auto; padding: 20px; }
-
-/* Header */
-.header { padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-.header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+.header { padding: 16px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
 .header h1 i { color: var(--accent-blue); }
-.header p { color: var(--text-secondary); margin-top: 6px; font-size: 0.9rem; }
+.main-layout { display: grid; grid-template-columns: 280px 1fr 360px; gap: 16px; }
 
-/* Layout */
-.main-layout { display: grid; grid-template-columns: 200px 1fr 360px; gap: 16px; }
-
-/* Sidebar */
-.sidebar { position: sticky; top: 20px; height: fit-content; }
-.sidebar-title { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; padding: 0 8px; }
-.resource-item { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; color: var(--text-secondary); font-size: 0.9rem; }
-.resource-item:hover { background: rgba(0,0,0,0.04); color: var(--text); }
-.resource-item.active { background: rgba(9,105,218,0.1); color: var(--accent-blue); font-weight: 500; }
-.resource-item i { font-size: 1.1rem; width: 20px; text-align: center; }
-.resource-count { margin-left: auto; background: var(--border); color: var(--text-secondary); padding: 1px 8px; border-radius: 10px; font-size: 0.75rem; }
-
-/* Table */
-.table-wrapper { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-.table-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); }
-.table-title { font-weight: 600; font-size: 1rem; }
-.table { width: 100%; border-collapse: collapse; }
-.table th { padding: 10px 14px; text-align: left; font-size: 0.8rem; color: var(--text-muted); border-bottom: 1px solid var(--border); background: var(--bg); font-weight: 500; white-space: nowrap; }
-.table td { padding: 12px 14px; border-bottom: 1px solid var(--border-soft); font-size: 0.85rem; vertical-align: top; }
-.table tr:hover { background: rgba(9,105,218,0.02); }
-.table tr.selected { background: rgba(9,105,218,0.06); }
-.table tr { cursor: pointer; }
+/* Left - Policy List */
+.policy-list { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.list-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.list-title { font-weight: 600; font-size: 0.95rem; }
+.list-filter { padding: 10px 16px; border-bottom: 1px solid var(--border); }
+.list-filter select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; background: var(--bg); }
+.list-items { max-height: 600px; overflow-y: auto; }
+.list-item { padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+.list-item:hover { background: rgba(9,105,218,0.04); }
+.list-item.active { background: rgba(9,105,218,0.08); border-left: 3px solid var(--accent-blue); }
+.list-item-id { font-size: 0.75rem; color: var(--text-muted); font-family: monospace; }
+.list-item-name { font-size: 0.9rem; font-weight: 500; margin-top: 2px; }
+.list-item-meta { display: flex; gap: 8px; margin-top: 6px; }
 
 /* Tags */
-.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 500; }
+.tag { display: inline-flex; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 500; }
 .tag-allow { background: rgba(26,127,55,0.1); color: var(--accent-green); }
 .tag-deny { background: rgba(208,34,46,0.1); color: var(--accent-red); }
 .tag-approval { background: rgba(191,135,0,0.1); color: var(--accent-orange); }
-.tag-wf { background: rgba(9,105,218,0.1); color: var(--accent-blue); }
-.tag-skill { background: rgba(130,80,223,0.1); color: var(--accent-purple); }
-.tag-ds { background: rgba(191,135,0,0.1); color: var(--accent-orange); }
-.tag-tol { background: rgba(101,109,118,0.1); color: var(--text-secondary); }
-.tag-kb { background: rgba(26,127,55,0.1); color: var(--accent-green); }
+.tag-type { background: rgba(9,105,218,0.1); color: var(--accent-blue); }
 
-/* Condition text */
-.condition-text { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
-.condition-text code { background: rgba(9,105,218,0.08); padding: 1px 5px; border-radius: 3px; color: var(--accent-blue); font-size: 0.75rem; }
+/* Center - Form */
+.form-panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 24px; }
+.form-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 16px; }
+.form-group.full { grid-column: span 2; }
+.form-label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; }
+.form-input, .form-select, .form-textarea {
+    width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-size: 0.9rem; transition: border-color 0.2s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent-blue); }
+.form-textarea { min-height: 80px; resize: vertical; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
+.form-hint { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
 
-/* Detail Panel */
-.detail-panel { position: sticky; top: 20px; height: fit-content; }
-.detail-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
-.detail-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 4px; }
-.detail-id { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; font-family: monospace; }
-.detail-section { margin-bottom: 16px; }
-.detail-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
-.detail-value { font-size: 0.9rem; line-height: 1.6; }
-.detail-code { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); overflow-x: auto; }
-.detail-obligation { background: rgba(191,135,0,0.05); border: 1px solid rgba(191,135,0,0.2); border-radius: 6px; padding: 10px 12px; font-size: 0.85rem; color: var(--accent-orange); }
+/* Condition Builder */
+.condition-builder { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.condition-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.condition-row select, .condition-row input { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; background: var(--card); }
+.condition-row .attr-select { width: 180px; }
+.condition-row .op-select { width: 100px; }
+.condition-row .value-input { flex: 1; }
+.condition-row .remove-btn { background: none; border: none; color: var(--accent-red); cursor: pointer; font-size: 1.1rem; padding: 4px; }
+.add-condition { display: flex; align-items: center; gap: 6px; color: var(--accent-blue); cursor: pointer; font-size: 0.85rem; padding: 6px 0; }
+.add-condition:hover { text-decoration: underline; }
 
-/* Stats */
-.stats { display: flex; gap: 12px; margin-bottom: 16px; }
-.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; flex: 1; }
-.stat-value { font-size: 1.4rem; font-weight: 600; }
-.stat-label { font-size: 0.8rem; color: var(--text-muted); }
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: all 0.15s; border: none; }
+.btn-primary { background: var(--accent-blue); color: #fff; }
+.btn-primary:hover { background: #0860c7; }
+.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--border); }
+.btn-danger { background: rgba(208,34,46,0.1); color: var(--accent-red); }
+.btn-danger:hover { background: rgba(208,34,46,0.2); }
+.btn-group { display: flex; gap: 8px; margin-top: 20px; }
 
-/* Responsive */
-@media (max-width: 1200px) { .main-layout { grid-template-columns: 1fr; } .sidebar { position: static; display: flex; flex-wrap: wrap; gap: 4px; } }
+/* Right - Preview */
+.preview-panel { position: sticky; top: 20px; height: fit-content; }
+.preview-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.preview-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.preview-title { font-weight: 600; font-size: 0.95rem; }
+.preview-body { padding: 16px; }
+.preview-json { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); overflow-x: auto; max-height: 500px; overflow-y: auto; }
+.preview-actions { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+
+/* Empty State */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.empty-state i { font-size: 3rem; margin-bottom: 12px; }
+.empty-state p { font-size: 0.9rem; }
+
+/* Modal */
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 100; }
+.modal-overlay.show { display: flex; }
+.modal { background: var(--card); border-radius: 12px; padding: 24px; width: 500px; max-width: 90vw; }
+.modal-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
 </style>
 </head>
 <body>
 <div class="container">
 <div class="header">
-<h1><i class="ri ri-shield-check-line"></i> AgentForge · ABAC 权限策略配置</h1>
-<p>基于属性的访问控制（Attribute-Based Access Control）策略管理</p>
-</div>
-
-<!-- Stats -->
-<div class="stats">
-<div class="stat-card">
-<div class="stat-value" style="color: var(--accent-blue);">24</div>
-<div class="stat-label">总策略数</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" style="color: var(--accent-green);">13</div>
-<div class="stat-label">Allow</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" style="color: var(--accent-red);">7</div>
-<div class="stat-label">Deny</div>
-</div>
-<div class="stat-card">
-<div class="stat-value" style="color: var(--accent-orange);">4</div>
-<div class="stat-label">需审批</div>
-</div>
-<div class="stat-card">
-<div class="stat-value">6</div>
-<div class="stat-label">资源类型</div>
+<h1><i class="ri ri-shield-check-line"></i> AgentForge · ABAC 策略配置</h1>
+<div class="btn-group">
+<button class="btn btn-primary" onclick="createNewPolicy()"><i class="ri ri-add-line"></i> 新建策略</button>
+<button class="btn btn-secondary" onclick="exportAllPolicies()"><i class="ri ri-download-line"></i> 导出全部</button>
 </div>
 </div>
 
 <div class="main-layout">
-<!-- Sidebar -->
-<div class="sidebar">
-<div class="sidebar-title">资源类型</div>
-<div class="resource-item active" onclick="filterByType('all')">
-<i class="ri ri-list-check"></i> 全部
-<span class="resource-count">24</span>
+<!-- Left - Policy List -->
+<div class="policy-list">
+<div class="list-header">
+<div class="list-title">策略列表</div>
+<span style="font-size: 0.85rem; color: var(--text-muted);" id="policy-count">0 条</span>
 </div>
-<div class="resource-item" onclick="filterByType('workflow')">
-<i class="ri ri-flow-chart"></i> 工作流
-<span class="resource-count">9</span>
-</div>
-<div class="resource-item" onclick="filterByType('skill')">
-<i class="ri ri-tools-line"></i> Skill
-<span class="resource-count">3</span>
-</div>
-<div class="resource-item" onclick="filterByType('dataset')">
-<i class="ri ri-database-2-line"></i> 数据集
-<span class="resource-count">6</span>
-</div>
-<div class="resource-item" onclick="filterByType('tool')">
-<i class="ri ri-hammer-line"></i> 工具/API
-<span class="resource-count">4</span>
-</div>
-<div class="resource-item" onclick="filterByType('kb')">
-<i class="ri ri-book-open-line"></i> 知识库
-<span class="resource-count">3</span>
-</div>
-</div>
-
-<!-- Table -->
-<div class="table-wrapper">
-<div class="table-header">
-<div class="table-title">策略列表</div>
-<div style="display: flex; gap: 8px;">
-<select style="padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; background: var(--bg);" onchange="filterByDecision(this.value)">
-<option value="all">全部决策</option>
-<option value="allow">Allow</option>
-<option value="deny">Deny</option>
-<option value="approval">需审批</option>
+<div class="list-filter">
+<select id="type-filter" onchange="renderPolicyList()">
+<option value="all">全部资源类型</option>
+<option value="workflow">工作流</option>
+<option value="skill">Skill</option>
+<option value="dataset">数据集</option>
+<option value="tool">工具/API</option>
+<option value="kb">知识库</option>
 </select>
 </div>
+<div class="list-items" id="policy-list-items"></div>
 </div>
-<table class="table">
-<thead>
-<tr>
-<th style="width: 100px;">策略ID</th>
-<th style="width: 80px;">资源类型</th>
-<th>策略名称</th>
-<th style="width: 70px;">动作</th>
-<th>条件</th>
-<th style="width: 70px;">决策</th>
-<th>附加义务</th>
-</tr>
-</thead>
-<tbody id="policy-table">
-</tbody>
-</table>
+
+<!-- Center - Form -->
+<div class="form-panel" id="form-panel">
+<div class="empty-state" id="empty-state">
+<i class="ri ri-file-edit-line"></i>
+<p>选择左侧策略编辑<br>或点击「新建策略」</p>
+</div>
+<div id="policy-form" style="display: none;">
+<div class="form-title">
+<span id="form-title-text">编辑策略</span>
+<span style="font-size: 0.8rem; color: var(--text-muted);" id="form-policy-id"></span>
+</div>
+
+<div class="form-grid">
+<div class="form-group">
+<label class="form-label">策略ID</label>
+<input type="text" class="form-input" id="input-id" placeholder="如: P-WF-001">
+</div>
+<div class="form-group">
+<label class="form-label">资源类型</label>
+<select class="form-select" id="input-type">
+<option value="workflow">工作流</option>
+<option value="skill">Skill</option>
+<option value="dataset">数据集</option>
+<option value="tool">工具/API</option>
+<option value="kb">知识库</option>
+</select>
+</div>
+<div class="form-group full">
+<label class="form-label">策略名称</label>
+<input type="text" class="form-input" id="input-name" placeholder="简明描述策略意图">
+</div>
+<div class="form-group">
+<label class="form-label">动作</label>
+<select class="form-select" id="input-action">
+<option value="read">read（读取）</option>
+<option value="edit">edit（编辑）</option>
+<option value="transfer">transfer（转移）</option>
+<option value="review">review（审核）</option>
+<option value="grant_permission">grant_permission（授权）</option>
+<option value="query_permission">query_permission（查询权限）</option>
+<option value="call">call（调用）</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">决策</label>
+<select class="form-select" id="input-decision">
+<option value="allow">allow（允许）</option>
+<option value="deny">deny（拒绝）</option>
+<option value="approval_required">approval_required（需审批）</option>
+</select>
+</div>
+<div class="form-group full">
+<label class="form-label">条件配置</label>
+<div class="condition-builder" id="condition-builder"></div>
+<div class="add-condition" onclick="addConditionRow()">
+<i class="ri ri-add-circle-line"></i> 添加条件
+</div>
+</div>
+<div class="form-group full">
+<label class="form-label">附加义务</label>
+<textarea class="form-textarea" id="input-obligation" placeholder="策略生效时需要执行的附加操作，如：记录日志、要求审批等"></textarea>
 </div>
 </div>
 
-<!-- Detail Panel -->
-<div class="detail-panel">
-<div class="detail-card" id="detail-card">
-<div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
-<i class="ri ri-shield-check-line" style="font-size: 2rem; margin-bottom: 8px;"></i>
-<div>点击策略查看详情</div>
+<div class="btn-group">
+<button class="btn btn-primary" onclick="savePolicy()"><i class="ri ri-save-line"></i> 保存策略</button>
+<button class="btn btn-danger" onclick="deletePolicy()"><i class="ri ri-delete-bin-line"></i> 删除</button>
+<button class="btn btn-secondary" onclick="cancelEdit()">取消</button>
 </div>
 </div>
+</div>
+
+<!-- Right - Preview -->
+<div class="preview-panel">
+<div class="preview-card">
+<div class="preview-header">
+<div class="preview-title">策略预览 (JSON)</div>
+<button class="btn btn-secondary" style="padding: 6px 10px; font-size: 0.8rem;" onclick="copyJSON()">
+<i class="ri ri-file-copy-line"></i> 复制
+</button>
+</div>
+<div class="preview-body">
+<pre class="preview-json" id="preview-json">// 选择或新建策略以预览</pre>
+</div>
+</div>
+
+<div class="preview-card" style="margin-top: 16px;">
+<div class="preview-header">
+<div class="preview-title">已配置策略统计</div>
+</div>
+<div class="preview-body">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+<div style="text-align: center; padding: 12px; background: rgba(26,127,55,0.05); border-radius: 8px;">
+<div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-green);" id="stat-allow">0</div>
+<div style="font-size: 0.8rem; color: var(--text-muted);">Allow</div>
+</div>
+<div style="text-align: center; padding: 12px; background: rgba(208,34,46,0.05); border-radius: 8px;">
+<div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-red);" id="stat-deny">0</div>
+<div style="font-size: 0.8rem; color: var(--text-muted);">Deny</div>
+</div>
+<div style="text-align: center; padding: 12px; background: rgba(191,135,0,0.05); border-radius: 8px;">
+<div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-orange);" id="stat-approval">0</div>
+<div style="font-size: 0.8rem; color: var(--text-muted);">需审批</div>
+</div>
+<div style="text-align: center; padding: 12px; background: rgba(9,105,218,0.05); border-radius: 8px;">
+<div style="font-size: 1.5rem; font-weight: 600; color: var(--accent-blue);" id="stat-total">0</div>
+<div style="font-size: 0.8rem; color: var(--text-muted);">总计</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal-overlay" id="import-modal">
+<div class="modal">
+<div class="modal-title">导入策略配置</div>
+<div class="form-group">
+<textarea class="form-textarea" id="import-json" style="min-height: 200px;" placeholder="粘贴 JSON 配置..."></textarea>
+</div>
+<div class="btn-group">
+<button class="btn btn-primary" onclick="doImport()">导入</button>
+<button class="btn btn-secondary" onclick="closeModal()">取消</button>
 </div>
 </div>
 </div>
 
 <script>
-const policies = [
-    {
-        id: "P-WF-005", type: "workflow", name: "工作流默认不可见", action: "read",
-        condition: "<code>resource.visibility_scope = private</code> 且非 owner 且非租户管理员",
-        decision: "deny", obligation: "默认私有，提示通过租户服务分享"
-    },
-    {
-        id: "P-WF-006", type: "workflow", name: "租户服务分享后允许查看工作流", action: "read",
-        condition: "存在有效 <code>tenant_share</code>，且包含 view 权限",
-        decision: "allow", obligation: "记录分享访问来源"
-    },
-    {
-        id: "P-WF-007", type: "workflow", name: "分享编辑范围允许编辑工作流", action: "edit",
-        condition: "存在有效 <code>tenant_share</code>，且包含 edit 权限",
-        decision: "allow", obligation: "记录编辑访问来源"
-    },
-    {
-        id: "P-WF-008", type: "workflow", name: "行长可访问下辖机构工作流", action: "read",
-        condition: "用户为行长/部门负责人，资源机构属于其管辖机构树",
-        decision: "allow", obligation: "按机构树范围授权"
-    },
-    {
-        id: "P-WF-009", type: "workflow", name: "禁止绕过租户服务转移工作流", action: "transfer",
-        condition: "请求来源不是 <code>tenant_service</code>",
-        decision: "deny", obligation: "记录安全事件"
-    },
-    {
-        id: "P-WF-010", type: "workflow", name: "工作流转移需要租户管理员审批", action: "transfer",
-        condition: "owner 发起，目标 owner 有效，且通过租户服务",
-        decision: "approval", obligation: "租户管理员审批，透传资源服务"
-    },
-    {
-        id: "P-WF-011", type: "workflow", name: "工作流审核角色可审核发布", action: "review",
-        condition: "用户具备 <code>workflow_reviewer</code>，资源待审核，同租户",
-        decision: "allow", obligation: "要求审核意见并记录日志"
-    },
-    {
-        id: "P-WF-012", type: "workflow", name: "系统管理员设置工作流可见范围", action: "grant_permission",
-        condition: "系统管理员通过租户服务设置 view/edit",
-        decision: "allow", obligation: "写入租户 ACL，透传工作流服务"
-    },
-    {
-        id: "P-WF-013", type: "workflow", name: "工作流可见范围并发修改冲突拒绝", action: "grant_permission",
-        condition: "请求 <code>acl_version</code> 小于资源当前版本",
-        decision: "deny", obligation: "要求刷新最新 ACL 快照"
-    },
-    {
-        id: "P-SK-004", type: "skill", name: "Skill 默认不可见", action: "read",
-        condition: "私有资源，非 owner，且无分享授权",
-        decision: "deny", obligation: "默认私有，提示配置可见范围"
-    },
-    {
-        id: "P-SK-005", type: "skill", name: "系统管理员设置 Skill 可见范围", action: "grant_permission",
-        condition: "系统管理员通过租户服务设置 view/edit",
-        decision: "allow", obligation: "写入租户 ACL，透传 Skill 服务"
-    },
-    {
-        id: "P-SK-006", type: "skill", name: "Skill 审核角色可审核发布", action: "review",
-        condition: "用户具备 <code>skill_reviewer</code>，资源待审核，同租户",
-        decision: "allow", obligation: "要求审核意见并记录日志"
-    },
-    {
-        id: "P-DS-004", type: "dataset", name: "数据集默认不可见", action: "read",
-        condition: "私有资源，非 owner，且无分享授权",
-        decision: "deny", obligation: "默认私有，提示通过租户服务分享"
-    },
-    {
-        id: "P-DS-005", type: "dataset", name: "租户服务分享后允许查看数据集", action: "read",
-        condition: "存在有效 <code>tenant_share</code>，且包含 view 权限",
-        decision: "allow", obligation: "按数据等级脱敏，记录分享访问"
-    },
-    {
-        id: "P-DS-006", type: "dataset", name: "系统管理员查询用户跨服务数据权限", action: "query_permission",
-        condition: "系统管理员查询同租户用户权限",
-        decision: "allow", obligation: "返回数据集、工作流、Skill 数量摘要"
-    },
-    {
-        id: "P-DS-007", type: "dataset", name: "系统管理员调整用户数据权限并透传", action: "grant_permission",
-        condition: "系统管理员通过租户服务设置 view/edit",
-        decision: "allow", obligation: "写入租户 ACL，透传各业务服务"
-    },
-    {
-        id: "P-DS-008", type: "dataset", name: "禁止业务服务本地修改数据权限", action: "grant_permission",
-        condition: "请求来源不是 <code>tenant_service</code>",
-        decision: "deny", obligation: "租户服务作为权限唯一权威源"
-    },
-    {
-        id: "P-DS-009", type: "dataset", name: "行长多部门数据集权限汇总", action: "read",
-        condition: "行长/负责人管辖机构与资源机构路径有交集",
-        decision: "allow", obligation: "返回按机构树聚合的权限摘要"
-    },
-    {
-        id: "P-TOL-003", type: "tool", name: "租户权限管理 API 仅管理员可调用", action: "call",
-        condition: "系统管理员，从管理控制台发起，同租户",
-        decision: "allow", obligation: "要求 MFA，记录管理员操作"
-    },
-    {
-        id: "P-TOL-004", type: "tool", name: "资源分享转移 API 只接受租户服务", action: "call",
-        condition: "请求来源不是 <code>tenant_service</code>",
-        decision: "deny", obligation: "拒绝绕过租户服务"
-    },
-    {
-        id: "P-TOL-005", type: "tool", name: "管理员在线查询各服务数据权限", action: "call",
-        condition: "系统管理员查询同租户用户，通过租户服务",
-        decision: "allow", obligation: "扇出查询工作流、数据集、Skill、知识库"
-    },
-    {
-        id: "P-TOL-006", type: "tool", name: "普通用户仅查询本人权限摘要", action: "call",
-        condition: "查询目标用户等于当前用户，响应模式为 summary",
-        decision: "allow", obligation: "隐藏管理员字段"
-    },
-    {
-        id: "P-KB-003", type: "kb", name: "知识库默认不可见", action: "read",
-        condition: "私有资源，非 owner，且无分享授权",
-        decision: "deny", obligation: "默认私有，提示配置可见范围"
-    },
-    {
-        id: "P-KB-004", type: "kb", name: "机构上下级继承知识库可见范围", action: "read",
-        condition: "可见范围为机构树，用户机构是可见机构下级",
-        decision: "allow", obligation: "按机构树读取，要求引用来源"
-    },
-    {
-        id: "P-KB-005", type: "kb", name: "知识库审核角色可审核发布", action: "review",
-        condition: "用户具备 <code>knowledge_reviewer</code>，资源待审核，同租户",
-        decision: "allow", obligation: "要求审核意见并记录日志"
-    }
+let policies = [];
+let editingIndex = -1;
+
+// 预置示例策略
+const samplePolicies = [
+    { id: "P-WF-005", type: "workflow", name: "工作流默认不可见", action: "read", conditions: [{ attr: "resource.visibility_scope", op: "=", value: "private" }, { attr: "requester.is_owner", op: "!=", value: "true" }, { attr: "requester.is_tenant_admin", op: "!=", value: "true" }], decision: "deny", obligation: "默认私有，提示通过租户服务分享" },
+    { id: "P-WF-006", type: "workflow", name: "租户服务分享后允许查看工作流", action: "read", conditions: [{ attr: "tenant_share.valid", op: "=", value: "true" }, { attr: "tenant_share.permissions", op: "contains", value: "view" }], decision: "allow", obligation: "记录分享访问来源" },
+    { id: "P-WF-008", type: "workflow", name: "行长可访问下辖机构工作流", action: "read", conditions: [{ attr: "requester.role", op: "in", value: "branch_manager,dept_head" }, { attr: "resource.org_path", op: "under", value: "requester.managed_org_tree" }], decision: "allow", obligation: "按机构树范围授权" },
+    { id: "P-WF-009", type: "workflow", name: "禁止绕过租户服务转移工作流", action: "transfer", conditions: [{ attr: "request.source", op: "!=", value: "tenant_service" }], decision: "deny", obligation: "记录安全事件" },
+    { id: "P-WF-010", type: "workflow", name: "工作流转移需要租户管理员审批", action: "transfer", conditions: [{ attr: "requester.is_owner", op: "=", value: "true" }, { attr: "transfer.target_valid", op: "=", value: "true" }, { attr: "request.source", op: "=", value: "tenant_service" }], decision: "approval_required", obligation: "租户管理员审批，透传资源服务" },
+    { id: "P-WF-011", type: "workflow", name: "工作流审核角色可审核发布", action: "review", conditions: [{ attr: "requester.roles", op: "contains", value: "workflow_reviewer" }, { attr: "resource.status", op: "=", value: "pending_review" }, { attr: "resource.tenant_id", op: "=", value: "requester.tenant_id" }], decision: "allow", obligation: "要求审核意见并记录日志" },
+    { id: "P-SK-004", type: "skill", name: "Skill 默认不可见", action: "read", conditions: [{ attr: "resource.visibility", op: "=", value: "private" }, { attr: "requester.is_owner", op: "!=", value: "true" }, { attr: "share_granted", op: "=", value: "false" }], decision: "deny", obligation: "默认私有，提示配置可见范围" },
+    { id: "P-SK-006", type: "skill", name: "Skill 审核角色可审核发布", action: "review", conditions: [{ attr: "requester.roles", op: "contains", value: "skill_reviewer" }, { attr: "resource.status", op: "=", value: "pending_review" }, { attr: "resource.tenant_id", op: "=", value: "requester.tenant_id" }], decision: "allow", obligation: "要求审核意见并记录日志" },
+    { id: "P-DS-004", type: "dataset", name: "数据集默认不可见", action: "read", conditions: [{ attr: "resource.visibility", op: "=", value: "private" }, { attr: "requester.is_owner", op: "!=", value: "true" }, { attr: "share_granted", op: "=", value: "false" }], decision: "deny", obligation: "默认私有，提示通过租户服务分享" },
+    { id: "P-DS-005", type: "dataset", name: "租户服务分享后允许查看数据集", action: "read", conditions: [{ attr: "tenant_share.valid", op: "=", value: "true" }, { attr: "tenant_share.permissions", op: "contains", value: "view" }], decision: "allow", obligation: "按数据等级脱敏，记录分享访问" },
+    { id: "P-DS-008", type: "dataset", name: "禁止业务服务本地修改数据权限", action: "grant_permission", conditions: [{ attr: "request.source", op: "!=", value: "tenant_service" }], decision: "deny", obligation: "租户服务作为权限唯一权威源" },
+    { id: "P-TOL-003", type: "tool", name: "租户权限管理 API 仅管理员可调用", action: "call", conditions: [{ attr: "requester.is_system_admin", op: "=", value: "true" }, { attr: "request.source", op: "=", value: "admin_console" }, { attr: "requester.tenant_id", op: "=", value: "resource.tenant_id" }], decision: "allow", obligation: "要求 MFA，记录管理员操作" },
+    { id: "P-TOL-006", type: "tool", name: "普通用户仅查询本人权限摘要", action: "call", conditions: [{ attr: "query.target_user", op: "=", value: "requester.user_id" }, { attr: "response.mode", op: "=", value: "summary" }], decision: "allow", obligation: "隐藏管理员字段" },
+    { id: "P-KB-003", type: "kb", name: "知识库默认不可见", action: "read", conditions: [{ attr: "resource.visibility", op: "=", value: "private" }, { attr: "requester.is_owner", op: "!=", value: "true" }, { attr: "share_granted", op: "=", value: "false" }], decision: "deny", obligation: "默认私有，提示配置可见范围" },
+    { id: "P-KB-004", type: "kb", name: "机构上下级继承知识库可见范围", action: "read", conditions: [{ attr: "resource.visibility_scope", op: "=", value: "org_tree" }, { attr: "requester.org_path", op: "under", value: "resource.visible_org_paths" }], decision: "allow", obligation: "按机构树读取，要求引用来源" }
 ];
 
-const typeLabels = {
-    workflow: { label: "工作流", class: "tag-wf" },
-    skill: { label: "Skill", class: "tag-skill" },
-    dataset: { label: "数据集", class: "tag-ds" },
-    tool: { label: "工具/API", class: "tag-tol" },
-    kb: { label: "知识库", class: "tag-kb" }
-};
+// Initialize
+policies = [...samplePolicies];
+renderPolicyList();
+updateStats();
 
-const decisionLabels = {
-    allow: { label: "allow", class: "tag-allow" },
-    deny: { label: "deny", class: "tag-deny" },
-    approval: { label: "approval_required", class: "tag-approval" }
-};
-
-let currentTypeFilter = "all";
-let currentDecisionFilter = "all";
-let selectedPolicy = null;
-
-function renderTable() {
-    const tbody = document.getElementById("policy-table");
-    const filtered = policies.filter(p => {
-        if (currentTypeFilter !== "all" && p.type !== currentTypeFilter) return false;
-        if (currentDecisionFilter !== "all" && p.decision !== currentDecisionFilter) return false;
-        return true;
-    });
-
-    tbody.innerHTML = filtered.map(p => `
-        <tr onclick="selectPolicy('${p.id}')" class="${selectedPolicy === p.id ? 'selected' : ''}">
-            <td><code style="font-size: 0.8rem; color: var(--text-muted);">${p.id}</code></td>
-            <td><span class="tag ${typeLabels[p.type].class}">${typeLabels[p.type].label}</span></td>
-            <td style="font-weight: 500;">${p.name}</td>
-            <td><code style="font-size: 0.8rem;">${p.action}</code></td>
-            <td class="condition-text">${p.condition}</td>
-            <td><span class="tag ${decisionLabels[p.decision].class}">${decisionLabels[p.decision].label}</span></td>
-            <td style="font-size: 0.82rem; color: var(--text-secondary);">${p.obligation}</td>
-        </tr>
-    `).join("");
+function renderPolicyList() {
+    const filter = document.getElementById('type-filter').value;
+    const filtered = filter === 'all' ? policies : policies.filter(p => p.type === filter);
+    
+    const container = document.getElementById('policy-list-items');
+    container.innerHTML = filtered.map((p, i) => {
+        const realIndex = policies.indexOf(p);
+        return `<div class="list-item ${realIndex === editingIndex ? 'active' : ''}" onclick="selectPolicy(${realIndex})">
+            <div class="list-item-id">${p.id}</div>
+            <div class="list-item-name">${p.name}</div>
+            <div class="list-item-meta">
+                <span class="tag tag-type">${getTypeLabel(p.type)}</span>
+                <span class="tag ${p.decision === 'allow' ? 'tag-allow' : p.decision === 'deny' ? 'tag-deny' : 'tag-approval'}">${p.decision}</span>
+            </div>
+        </div>`;
+    }).join('');
+    
+    document.getElementById('policy-count').textContent = `${filtered.length} 条`;
 }
 
-function filterByType(type) {
-    currentTypeFilter = type;
-    document.querySelectorAll(".resource-item").forEach(el => el.classList.remove("active"));
-    event.currentTarget.classList.add("active");
-    renderTable();
+function getTypeLabel(type) {
+    const labels = { workflow: '工作流', skill: 'Skill', dataset: '数据集', tool: '工具/API', kb: '知识库' };
+    return labels[type] || type;
 }
 
-function filterByDecision(decision) {
-    currentDecisionFilter = decision;
-    renderTable();
+function selectPolicy(index) {
+    editingIndex = index;
+    const p = policies[index];
+    
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('policy-form').style.display = 'block';
+    document.getElementById('form-title-text').textContent = '编辑策略';
+    
+    document.getElementById('input-id').value = p.id;
+    document.getElementById('input-type').value = p.type;
+    document.getElementById('input-name').value = p.name;
+    document.getElementById('input-action').value = p.action;
+    document.getElementById('input-decision').value = p.decision;
+    document.getElementById('input-obligation').value = p.obligation;
+    
+    renderConditions(p.conditions);
+    updatePreview();
+    renderPolicyList();
 }
 
-function selectPolicy(id) {
-    selectedPolicy = id;
-    const p = policies.find(x => x.id === id);
-    if (!p) return;
-
-    const card = document.getElementById("detail-card");
-    card.innerHTML = `
-        <div class="detail-title">${p.name}</div>
-        <div class="detail-id">${p.id}</div>
-        
-        <div class="detail-section">
-            <div class="detail-label">资源类型</div>
-            <div class="detail-value"><span class="tag ${typeLabels[p.type].class}">${typeLabels[p.type].label}</span></div>
-        </div>
-        
-        <div class="detail-section">
-            <div class="detail-label">动作</div>
-            <div class="detail-value"><code>${p.action}</code></div>
-        </div>
-        
-        <div class="detail-section">
-            <div class="detail-label">决策</div>
-            <div class="detail-value"><span class="tag ${decisionLabels[p.decision].class}" style="font-size: 0.9rem;">${decisionLabels[p.decision].label}</span></div>
-        </div>
-        
-        <div class="detail-section">
-            <div class="detail-label">条件</div>
-            <div class="detail-code">${p.condition}</div>
-        </div>
-        
-        <div class="detail-section">
-            <div class="detail-label">附加义务</div>
-            <div class="detail-obligation">${p.obligation}</div>
-        </div>
-    `;
-
-    renderTable();
+function createNewPolicy() {
+    editingIndex = -1;
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('policy-form').style.display = 'block';
+    document.getElementById('form-title-text').textContent = '新建策略';
+    
+    document.getElementById('input-id').value = '';
+    document.getElementById('input-type').value = 'workflow';
+    document.getElementById('input-name').value = '';
+    document.getElementById('input-action').value = 'read';
+    document.getElementById('input-decision').value = 'allow';
+    document.getElementById('input-obligation').value = '';
+    
+    renderConditions([]);
+    updatePreview();
+    renderPolicyList();
 }
 
-// Initial render
-renderTable();
+function renderConditions(conditions) {
+    const container = document.getElementById('condition-builder');
+    container.innerHTML = conditions.map((c, i) => `
+        <div class="condition-row">
+            <select class="attr-select" onchange="updateCondition(${i}, 'attr', this.value)">
+                ${getAttrOptions(c.attr)}
+            </select>
+            <select class="op-select" onchange="updateCondition(${i}, 'op', this.value)">
+                ${getOpOptions(c.op)}
+            </select>
+            <input class="value-input" value="${c.value}" placeholder="值" onchange="updateCondition(${i}, 'value', this.value)">
+            <button class="remove-btn" onclick="removeCondition(${i})"><i class="ri ri-close-line"></i></button>
+        </div>
+    `).join('');
+}
+
+function getAttrOptions(selected) {
+    const attrs = [
+        'resource.visibility', 'resource.visibility_scope', 'resource.status', 'resource.tenant_id', 'resource.org_path', 'resource.data_level',
+        'requester.is_owner', 'requester.is_tenant_admin', 'requester.is_system_admin', 'requester.role', 'requester.roles', 'requester.tenant_id', 'requester.user_id', 'requester.org_path',
+        'request.source', 'request.acl_version',
+        'tenant_share.valid', 'tenant_share.permissions',
+        'transfer.target_valid', 'share_granted', 'query.target_user', 'response.mode'
+    ];
+    return attrs.map(a => `<option value="${a}" ${a === selected ? 'selected' : ''}>${a}</option>`).join('');
+}
+
+function getOpOptions(selected) {
+    const ops = ['=', '!=', 'contains', 'in', 'not_in', 'under', '>', '<', '>=', '<='];
+    return ops.map(o => `<option value="${o}" ${o === selected ? 'selected' : ''}>${o}</option>`).join('');
+}
+
+function addConditionRow() {
+    const p = getCurrentPolicyData();
+    p.conditions.push({ attr: 'resource.visibility', op: '=', value: '' });
+    renderConditions(p.conditions);
+    updatePreview();
+}
+
+function updateCondition(index, field, value) {
+    if (editingIndex >= 0) {
+        policies[editingIndex].conditions[index][field] = value;
+    }
+    updatePreview();
+}
+
+function removeCondition(index) {
+    const p = getCurrentPolicyData();
+    p.conditions.splice(index, 1);
+    renderConditions(p.conditions);
+    updatePreview();
+}
+
+function getCurrentPolicyData() {
+    if (editingIndex >= 0) return policies[editingIndex];
+    return {
+        id: document.getElementById('input-id').value,
+        type: document.getElementById('input-type').value,
+        name: document.getElementById('input-name').value,
+        action: document.getElementById('input-action').value,
+        decision: document.getElementById('input-decision').value,
+        obligation: document.getElementById('input-obligation').value,
+        conditions: []
+    };
+}
+
+function savePolicy() {
+    const data = {
+        id: document.getElementById('input-id').value.trim(),
+        type: document.getElementById('input-type').value,
+        name: document.getElementById('input-name').value.trim(),
+        action: document.getElementById('input-action').value,
+        decision: document.getElementById('input-decision').value,
+        obligation: document.getElementById('input-obligation').value.trim(),
+        conditions: editingIndex >= 0 ? policies[editingIndex].conditions : []
+    };
+    
+    if (!data.id || !data.name) {
+        alert('请填写策略ID和名称');
+        return;
+    }
+    
+    if (editingIndex >= 0) {
+        policies[editingIndex] = data;
+    } else {
+        policies.push(data);
+    }
+    
+    renderPolicyList();
+    updateStats();
+    alert('策略已保存');
+}
+
+function deletePolicy() {
+    if (editingIndex < 0) return;
+    if (!confirm('确定删除此策略？')) return;
+    
+    policies.splice(editingIndex, 1);
+    editingIndex = -1;
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('policy-form').style.display = 'none';
+    renderPolicyList();
+    updateStats();
+}
+
+function cancelEdit() {
+    editingIndex = -1;
+    document.getElementById('empty-state').style.display = 'block';
+    document.getElementById('policy-form').style.display = 'none';
+    renderPolicyList();
+}
+
+function updatePreview() {
+    const p = getCurrentPolicyData();
+    const preview = {
+        policy_id: p.id || "P-XXX-000",
+        resource_type: p.type,
+        name: p.name || "策略名称",
+        action: p.action,
+        conditions: (p.conditions || []).map(c => ({
+            attribute: c.attr,
+            operator: c.op,
+            value: c.value
+        })),
+        decision: p.decision,
+        obligation: p.obligation || null
+    };
+    document.getElementById('preview-json').textContent = JSON.stringify(preview, null, 2);
+}
+
+function updateStats() {
+    document.getElementById('stat-total').textContent = policies.length;
+    document.getElementById('stat-allow').textContent = policies.filter(p => p.decision === 'allow').length;
+    document.getElementById('stat-deny').textContent = policies.filter(p => p.decision === 'deny').length;
+    document.getElementById('stat-approval').textContent = policies.filter(p => p.decision === 'approval_required').length;
+}
+
+function copyJSON() {
+    navigator.clipboard.writeText(document.getElementById('preview-json').textContent);
+    alert('已复制到剪贴板');
+}
+
+function exportAllPolicies() {
+    const data = JSON.stringify(policies, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'abac-policies.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function closeModal() {
+    document.getElementById('import-modal').classList.remove('show');
+}
 </script>
 </body>
 </html>
