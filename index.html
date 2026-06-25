@@ -161,6 +161,14 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div class="sidebar">
 <div class="section-title" style="margin-bottom: 12px;"><i class="ri ri-folder-line"></i> 资源类型</div>
 
+<div class="resource-card" onclick="selectResource('global')" style="border-left: 3px solid var(--accent-red); margin-bottom: 20px;">
+<div class="resource-icon" style="background: rgba(208,215,222,0.4); color: var(--text-secondary);">
+<i class="ri ri-global-line"></i>
+</div>
+<div class="resource-name">全局</div>
+<div class="resource-desc">跨资源类型的通用权限</div>
+</div>
+
 <div class="resource-card active" onclick="selectResource('workflow')">
 <div class="resource-icon" style="background: rgba(88,166,255,0.15); color: var(--accent-blue);">
 <i class="ri ri-flow-chart"></i>
@@ -460,6 +468,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <script>
 const resourceMap = {
+    'global': { type: '全局', icon: 'ri-global-line' },
     'workflow': { type: '工作流', icon: 'ri-flow-chart' },
     'agent': { type: '智能体', icon: 'ri-robot-line' },
     'evalset': { type: '评测集', icon: 'ri-bar-chart-box-line' },
