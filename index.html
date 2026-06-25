@@ -209,16 +209,23 @@ input:checked + .slider:before { transform: translateX(20px); }
 <div class="section-title"><i class="ri ri-user-line"></i> 主体属性（Subject）</div>
 <div class="form-grid">
 <div class="form-group">
-<label class="form-label">用户角色</label>
-<select class="form-select" id="subject-role" onchange="updatePreview()">
-<option value="admin">管理员</option>
-<option value="developer" selected>开发者</option>
-<option value="operator">运维人员</option>
-<option value="viewer">只读用户</option>
+<label class="form-label">租户</label>
+<select class="form-select" id="subject-tenant" onchange="updatePreview()">
+<option value="tenant-001" selected>tenant-001</option>
+<option value="tenant-002">tenant-002</option>
+<option value="tenant-003">tenant-003</option>
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">所属部门</label>
+<label class="form-label">机构</label>
+<select class="form-select" id="subject-org" onchange="updatePreview()">
+<option value="org-a" selected>机构A</option>
+<option value="org-b">机构B</option>
+<option value="org-c">机构C</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label">部门</label>
 <select class="form-select" id="subject-dept" onchange="updatePreview()">
 <option value="engineering" selected>工程部</option>
 <option value="product">产品部</option>
@@ -227,20 +234,11 @@ input:checked + .slider:before { transform: translateX(20px); }
 </select>
 </div>
 <div class="form-group">
-<label class="form-label">安全等级</label>
-<select class="form-select" id="subject-security" onchange="updatePreview()">
-<option value="public">公开</option>
-<option value="internal" selected>内部</option>
-<option value="confidential">机密</option>
-<option value="secret">绝密</option>
-</select>
-</div>
-<div class="form-group">
-<label class="form-label">组织单元</label>
-<select class="form-select" id="subject-org" onchange="updatePreview()">
-<option value="team-a" selected>团队A</option>
-<option value="team-b">团队B</option>
-<option value="team-c">团队C</option>
+<label class="form-label">审计级别</label>
+<select class="form-select" id="subject-audit" onchange="updatePreview()">
+<option value="basic" selected>基础</option>
+<option value="detailed">详细</option>
+<option value="full">完整</option>
 </select>
 </div>
 </div>
@@ -504,10 +502,10 @@ function updatePreview() {
                 security_level: document.getElementById('resource-security').value
             },
             subject: {
-                role: document.getElementById('subject-role').value,
+                tenant: document.getElementById('subject-tenant').value,
+                organization: document.getElementById('subject-org').value,
                 department: document.getElementById('subject-dept').value,
-                security_level: document.getElementById('subject-security').value,
-                org_unit: document.getElementById('subject-org').value
+                audit_level: document.getElementById('subject-audit').value
             },
             operations: getSelectedOperations(),
             conditions: {}
