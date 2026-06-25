@@ -463,7 +463,7 @@ function cancelEdit() {
 function updatePreview() {
     const p = getCurrentPolicyData();
     
-    // Build SQL preview
+    // Build WHERE-style SQL preview
     const conditions = (p.conditions || []);
     const whereClauses = conditions.map(c => {
         const val = c.value.startsWith('requester.') || c.value.startsWith('resource.') || c.value.startsWith('request.') || c.value.startsWith('tenant_share.') 
@@ -487,32 +487,33 @@ function updatePreview() {
     const decisionMap = { 'allow': 'ALLOW', 'deny': 'DENY', 'approval_required': 'APPROVAL_REQUIRED' };
     const actionMap = { 'read': 'READ', 'edit': 'EDIT', 'transfer': 'TRANSFER', 'review': 'REVIEW', 'grant_permission': 'GRANT_PERMISSION', 'query_permission': 'QUERY_PERMISSION', 'call': 'CALL' };
     
-    let sql = `-- 策略: ${p.name || '策略名称'}\n`;
-    sql += `-- 策略ID: ${p.id || 'P-XXX-000'}\n`;
-    sql += `-- 资源类型: ${getTypeLabel(p.type)}\n\n`;
-    sql += `CREATE POLICY ${p.id || 'policy_id'}\n`;
-    sql += `  ON ${p.type}_resources\n`;
-    sql += `  FOR ${actionMap[p.action] || p.action.toUpperCase()}\n`;
-    sql += `  USING (\n`;
+    let sql = `-- =============================================\n`;
+    sql += `-- 策略: ${p.name || '策略名称'}\n`;
+    sql += `-- ID: ${p.id || 'P-XXX-000'} | 资源: ${getTypeLabel(p.type)} | 动作: ${actionMap[p.action] || p.action.toUpperCase()}\n`;
+    sql += `-- 决策: ${decisionMap[p.decision] || p.decision.toUpperCase()}\n`;
+    sql += `-- =============================================\n\n`;
+    sql += `SELECT\n`;
+    sql += `  policy_id,\n`;
+    sql += `  '${decisionMap[p.decision] || p.decision.toUpperCase()}' AS decision\n\n`;
+    sql += `FROM ${p.type}_policies\n\n`;
+    sql += `WHERE\n`;
     
     if (whereClauses.length === 0) {
-    sql += `    -- 无条件\n`;
+    sql += `  -- 无条件限制\n`;
+    sql += `  1 = 1`;
     } else {
-    sql += whereClauses.map(c => `    ${c}`).join('\n AND\n');
+    sql += whereClauses.map(c => `  ${c}`).join('\n  AND\n');
     }
     
-    sql += `\n  )\n`;
-    sql += `  ${decisionMap[p.decision] || p.decision.toUpperCase()}`;
+    sql += `\n`;
     
     if (p.obligation) {
-    sql += `\n  -- 附加义务: ${p.obligation}`;
+    sql += `\n-- 附加义务:\n-- ${p.obligation}`;
     }
     
     document.getElementById('preview-json').textContent = sql;
 }
-
 function updateStats() {
-    document.getElementById('stat-total').textContent = policies.length;
     document.getElementById('stat-allow').textContent = policies.filter(p => p.decision === 'allow').length;
     document.getElementById('stat-deny').textContent = policies.filter(p => p.decision === 'deny').length;
     document.getElementById('stat-approval').textContent = policies.filter(p => p.decision === 'approval_required').length;
